@@ -8,9 +8,9 @@ If someone from your added friend has the birthday today, the bot will reminder 
 
 ## Features
 
-The main feature is the ability to import birthday dates from your VK (social network, popular in CIS) profiles. 
+The main feature is the ability to import birthday dates from your VK (social network, popular in CIS) profile. 
 
-Now you haven't to check VK to not to mess a friend's birthday.
+Now you haven't to check VK to not to miss a friend's birthday. You can track this in Telegram!
 
 ## Language
 
