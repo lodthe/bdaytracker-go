@@ -32,7 +32,6 @@ linters-settings:
     disabled-checks:
       - dupImport # https://github.com/go-critic/go-critic/issues/845
       - octalLiteral # TODO
-      - whyNoLint # TODO
       - wrapperFunc # TODO
       - paramTypeCombine
       - hugeParam
@@ -67,7 +66,6 @@ linters:
     - bodyclose
     - depguard
     - dogsled
-    # - dupl
     - gocognit
     - goconst
     - gocritic
@@ -77,13 +75,11 @@ linters:
     - golint
     - gomnd
     - gosec
-    # - misspell
     - nakedret
     - scopelint
     - unconvert
     - unparam
     - whitespace
-    # - wsl
 
   # disable:
     # - stylecheck
@@ -111,9 +107,10 @@ issues:
     - path: _test\.go
       linters:
         - gomnd
+
 # golangci.com configuration
 # https://github.com/golangci/golangci/wiki/Configuration
 service:
-  golangci-lint-version: 1.22.x # use the fixed version to not introduce new linters unexpectedly
+  golangci-lint-version: 1.28.x # use the fixed version to not introduce new linters unexpectedly
   prepare:
     - echo "here I can run custom commands, but no preparation needed for this repo"

@@ -1,0 +1,15 @@
+name: Golang CI Lint
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: GolangCI-Lint Action
+        uses: golangci/golangci-lint-action@v1
+        with:
+          version: v1.28
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
