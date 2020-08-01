@@ -2,11 +2,13 @@ package tg
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/lodthe/bdaytracker-go/tg/state"
 )
 
 type State struct {
 	gorm.Model
 	TelegramID int
+	State      state.State // Conversation state
 }
 
 func loadState(db *gorm.DB, telegramID int) (*State, error) {

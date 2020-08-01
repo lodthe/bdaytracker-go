@@ -1,5 +1,8 @@
 # BDayTracker
 
+![Linter passing status](https://github.com/LoDThe/bdaytracker-go/workflows/Golang%20CI%20Lint/badge.svg)
+![Test passing status](https://github.com/LoDThe/bdaytracker-go/workflows/Test/badge.svg)
+
 ## Description
 
 This is a Telegram bot that helps you to not forget about your friends' birthdays. 

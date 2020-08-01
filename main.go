@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jinzhu/gorm"
+	"github.com/lodthe/bdaytracker-go/migration"
 	"github.com/petuhovskiy/telegram"
 	"github.com/petuhovskiy/telegram/updates"
 	log "github.com/sirupsen/logrus"
@@ -38,7 +39,8 @@ func main() {
 		log.WithError(err).Fatal("failed to start the polling")
 	}
 
-	handle.StartHandling(general, ch)
+	collector := handle.NewUpdatesCollector()
+	collector.Start(general, ch)
 }
 
 func setupLogging() {
@@ -50,6 +52,11 @@ func setupGORM(config conf.DB) *gorm.DB {
 	db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s sslmode=%s dbname=%s user=%s password=%s", config.Host, config.Port, config.SSLMode, config.Name, config.User, config.Password))
 	if err != nil {
 		log.WithError(err).Fatal("failed to open the db")
+	}
+
+	err = migration.Migrate(db)
+	if err != nil {
+		log.WithError(err).Fatal("failed to make migrations")
 	}
 
 	return db
