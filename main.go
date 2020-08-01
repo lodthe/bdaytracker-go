@@ -5,10 +5,11 @@ import (
 	"fmt"
 
 	"github.com/jinzhu/gorm"
-	"github.com/lodthe/bdaytracker-go/migration"
 	"github.com/petuhovskiy/telegram"
 	"github.com/petuhovskiy/telegram/updates"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/lodthe/bdaytracker-go/migration"
 
 	"github.com/lodthe/bdaytracker-go/conf"
 	"github.com/lodthe/bdaytracker-go/tg"

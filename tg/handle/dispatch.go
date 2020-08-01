@@ -3,9 +3,10 @@ package handle
 import (
 	"runtime/debug"
 
-	"github.com/lodthe/bdaytracker-go/tg"
 	"github.com/petuhovskiy/telegram"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/lodthe/bdaytracker-go/tg"
 )
 
 func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.Update) {
@@ -29,5 +30,7 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 		return
 	}
 
-	activateHandler(s, update)
+	activateHandler(s, update,
+		&StartHandler{},
+	)
 }

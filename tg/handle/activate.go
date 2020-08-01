@@ -1,10 +1,11 @@
 package handle
 
 import (
-	"github.com/lodthe/bdaytracker-go/tg"
-	"github.com/lodthe/bdaytracker-go/tg/state"
 	"github.com/petuhovskiy/telegram"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/lodthe/bdaytracker-go/tg"
+	"github.com/lodthe/bdaytracker-go/tg/state"
 )
 
 type methodState interface {
@@ -36,12 +37,12 @@ func activateHandler(s *tg.Session, update telegram.Update, handlers ...interfac
 			"handler":     handlers[i],
 		})
 
-		switch handlers[i].(type) {
+		switch handler := handlers[i].(type) {
 		case methodState:
-			canHandle = s.State.State == handlers[i].(methodState).State()
+			canHandle = s.State.State == handler.State()
 
 		case methodCanHandle:
-			canHandle = handlers[i].(methodCanHandle).CanHandle(s, update.Message, update.CallbackQuery)
+			canHandle = handler.CanHandle(s, update.Message, update.CallbackQuery)
 		}
 
 		if !canHandle {
