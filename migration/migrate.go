@@ -3,12 +3,12 @@ package migration
 import (
 	"github.com/jinzhu/gorm"
 
-	"github.com/lodthe/bdaytracker-go/tg"
+	"github.com/lodthe/bdaytracker-go/tg/state"
 )
 
 func Migrate(db *gorm.DB) error {
 	db.AutoMigrate(
-		tg.State{},
+		state.State{},
 	)
 
 	return nil

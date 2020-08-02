@@ -2,6 +2,8 @@ package tg
 
 import (
 	"github.com/petuhovskiy/telegram"
+
+	"github.com/lodthe/bdaytracker-go/tg/state"
 )
 
 type Session struct {
@@ -10,11 +12,11 @@ type Session struct {
 	TelegramID int
 	LastUpdate *telegram.Update
 
-	State *State
+	State *state.State
 }
 
 func NewSession(telegramID int, general *General, update *telegram.Update) (*Session, error) {
-	state, err := loadState(general.DB, telegramID)
+	st, err := state.LoadState(general.DB, telegramID)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +25,7 @@ func NewSession(telegramID int, general *General, update *telegram.Update) (*Ses
 		General:    *general,
 		TelegramID: telegramID,
 		LastUpdate: update,
-		State:      state,
+		State:      st,
 	}, nil
 }
 

@@ -1,5 +1,13 @@
 package callback
 
+func Init() {
+	addCallback(OpenMenu{})
+	addCallback(AddFriend{})
+	addCallback(AddFromVK{})
+	addCallback(FriendsList{})
+	addCallback(Settings{})
+}
+
 type OpenMenu struct {
 }
 

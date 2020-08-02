@@ -30,6 +30,7 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 		return
 	}
 
+	s.AnswerOnLastCallback()
 	activateHandler(s, update,
 		&StartHandler{},
 		&MenuHandler{},

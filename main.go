@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/lodthe/bdaytracker-go/migration"
+	"github.com/lodthe/bdaytracker-go/tg/callback"
 
 	"github.com/lodthe/bdaytracker-go/conf"
 	"github.com/lodthe/bdaytracker-go/tg"
@@ -25,6 +26,7 @@ func main() {
 	db := setupGORM(config.DB)
 
 	bot := setupBot(config.Telegram)
+	callback.Init()
 
 	general := tg.General{
 		Bot:    bot,

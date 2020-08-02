@@ -2,12 +2,15 @@ package handle
 
 import (
 	"strings"
+	"time"
 
 	"github.com/petuhovskiy/telegram"
 
 	"github.com/lodthe/bdaytracker-go/tg"
 	"github.com/lodthe/bdaytracker-go/tg/tgview"
 )
+
+const delayAfterStartMessage = time.Second
 
 type StartHandler struct {
 }
@@ -18,4 +21,6 @@ func (h *StartHandler) CanHandle(s *tg.Session, msg *telegram.Message, clb *tele
 
 func (h *StartHandler) HandleMessage(s *tg.Session, msgText string) {
 	tgview.SendStartMessage(s)
+	time.Sleep(delayAfterStartMessage)
+	tgview.SendMenu(s)
 }
