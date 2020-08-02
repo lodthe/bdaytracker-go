@@ -16,6 +16,6 @@ func (h *StartHandler) CanHandle(s *tg.Session, msg *telegram.Message, clb *tele
 	return msg != nil && strings.HasPrefix(msg.Text, "/start")
 }
 
-func (h *StartHandler) HandleMessage(s *tg.Session, msg *telegram.Message) {
+func (h *StartHandler) HandleMessage(s *tg.Session, msgText string) {
 	tgview.SendStartMessage(s)
 }

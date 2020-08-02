@@ -21,7 +21,7 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 		}
 	}()
 
-	s, err := tg.NewSession(sessionTelegramID, general)
+	s, err := tg.NewSession(sessionTelegramID, general, &update)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"session_telegram_id": sessionTelegramID,
@@ -32,5 +32,6 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 
 	activateHandler(s, update,
 		&StartHandler{},
+		&MenuHandler{},
 	)
 }

@@ -1,6 +1,7 @@
 package tg
 
 import (
+	"errors"
 	"strconv"
 
 	"github.com/petuhovskiy/telegram"
@@ -26,6 +27,28 @@ func (s *Session) sendMessage(text string, keyboard telegram.AnyKeyboard) error 
 	return err
 }
 
-func (s *Session) SendText(text string) error {
-	return s.sendMessage(text, nil)
+func (s *Session) SendText(text string, keyboard ...telegram.AnyKeyboard) error {
+	if len(keyboard) == 0 {
+		return s.sendMessage(text, nil)
+	}
+
+	switch buttons := keyboard[0].(type) {
+	case [][]telegram.InlineKeyboardButton:
+		return s.sendMessage(text, telegram.InlineKeyboardMarkup{
+			InlineKeyboard: buttons,
+		})
+
+	case [][]telegram.KeyboardButton:
+		return s.sendMessage(text, telegram.ReplyKeyboardMarkup{
+			Keyboard:        buttons,
+			ResizeKeyboard:  true,
+			OneTimeKeyboard: true,
+			Selective:       true,
+		})
+
+	default:
+		err := errors.New("unknown keyboard type")
+		log.WithField("keyboard", keyboard).WithError(err).Error("failed to send a telegram message")
+		return err
+	}
 }
