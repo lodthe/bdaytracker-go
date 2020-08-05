@@ -1,26 +1,67 @@
 package state
 
 import (
+	"github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/pkg/errors"
+
 	"github.com/jinzhu/gorm"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/lodthe/bdaytracker-go/models"
 )
 
 type State struct {
 	gorm.Model
 	TelegramID int
 	State      ID // Conversation state
+
+	Friends []models.Friend // If there is no limit for rows in the database, it's better to store friends in a separate table
+
+	// Conversation models. They keep information that the user has already sent.
+
+	NewFriend models.Friend
 }
 
 func LoadState(db *gorm.DB, telegramID int) (*State, error) {
-	var st State
-	err := db.Where(&State{
+	var st StateDB
+	err := db.Where(&StateDB{
 		TelegramID: telegramID,
-	}).FirstOrCreate(&st, State{
-		TelegramID: telegramID,
-	}).Error
+	}).Take(&st).Error
 
-	return &st, err
+	if err == gorm.ErrRecordNotFound {
+		var j postgres.Jsonb
+		j, err = ToJSON(&State{
+			TelegramID: telegramID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		st = StateDB{
+			TelegramID: telegramID,
+			State:      j,
+		}
+		err = db.Create(&st).Error
+
+		log.WithField("telegram_id", telegramID).Info("created a new state entry")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return FromJSON(st.State)
 }
 
 func (s *State) Save(db *gorm.DB) error {
-	return db.Save(s).Error
+	j, err := ToJSON(s)
+	if err != nil {
+		return errors.Wrap(err, "failed to marshal state")
+	}
+
+	return db.Model(&StateDB{}).
+		Where(&StateDB{
+			TelegramID: s.TelegramID,
+		}).
+		Update("state", j).
+		Error
 }

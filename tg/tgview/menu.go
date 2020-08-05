@@ -10,7 +10,10 @@ import (
 	"github.com/lodthe/bdaytracker-go/tg/tgview/btn"
 )
 
-func SendMenu(s *tg.Session) {
+type Menu struct {
+}
+
+func (m Menu) Send(s *tg.Session, edit bool) {
 	text := fmt.Sprintf(`<b>%s</b>
 
 <b>%s</b> — добавить вручную нового друга.
@@ -31,5 +34,15 @@ func SendMenu(s *tg.Session) {
 		},
 	}
 
-	s.SendText(text, keyboard)
+	s.SendEditText(text, keyboard, edit)
+}
+
+func (m Menu) Keyboard() [][]telegram.KeyboardButton {
+	return [][]telegram.KeyboardButton{
+		{
+			{
+				Text: btn.Menu,
+			},
+		},
+	}
 }

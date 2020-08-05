@@ -8,7 +8,7 @@ import (
 
 func Migrate(db *gorm.DB) error {
 	db.AutoMigrate(
-		state.State{},
+		state.StateDB{},
 	)
 
 	return nil

@@ -57,6 +57,9 @@ func setupGORM(config conf.DB) *gorm.DB {
 		log.WithError(err).Fatal("failed to open the db")
 	}
 
+	db.DB().SetMaxOpenConns(config.MaxConnections)
+	db.LogMode(config.GORMDebug)
+
 	err = migration.Migrate(db)
 	if err != nil {
 		log.WithError(err).Fatal("failed to make migrations")

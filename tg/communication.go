@@ -39,6 +39,26 @@ func (s *Session) sendMessage(text string, keyboard telegram.AnyKeyboard) error 
 	return err
 }
 
+func (s *Session) editInlineMessage(text string, keyboard *telegram.InlineKeyboardMarkup) error {
+	_, err := s.Bot.EditMessageText(&telegram.EditMessageTextRequest{
+		ChatID:                strconv.Itoa(s.TelegramID),
+		MessageID:             s.LastUpdate.CallbackQuery.Message.MessageID,
+		InlineMessageID:       s.LastUpdate.CallbackQuery.InlineMessageID,
+		Text:                  text,
+		ParseMode:             parseMode,
+		DisableWebPagePreview: true,
+		ReplyMarkup:           keyboard,
+	})
+	if err != nil {
+		log.WithFields(log.Fields{
+			"telegram_id":    s.TelegramID,
+			"message_text":   text,
+			"callback_query": s.LastUpdate.CallbackQuery,
+		}).WithError(err).Error("failed to edit the message")
+	}
+	return err
+}
+
 func (s *Session) SendText(text string, keyboard ...telegram.AnyKeyboard) error {
 	if len(keyboard) == 0 {
 		return s.sendMessage(text, nil)
@@ -55,6 +75,29 @@ func (s *Session) SendText(text string, keyboard ...telegram.AnyKeyboard) error 
 			OneTimeKeyboard: true,
 			Selective:       true,
 		})
+
+	default:
+		err := errors.New("unknown keyboard type")
+		log.WithField("keyboard", keyboard).WithError(err).Error("failed to send a telegram message")
+		return err
+	}
+}
+
+func (s *Session) SendEditText(text string, keyboard telegram.AnyKeyboard, edit bool) error {
+	if !edit || s.LastUpdate.CallbackQuery == nil {
+		return s.SendText(text, keyboard)
+	}
+
+	switch buttons := keyboard.(type) {
+	case [][]telegram.InlineKeyboardButton:
+		return s.editInlineMessage(text, markup.InlineKeyboardMarkup(buttons))
+
+	case [][]telegram.KeyboardButton:
+		log.WithFields(log.Fields{
+			"text":     text,
+			"keyboard": keyboard,
+		}).Error("trying to edit the message with not an inline markup")
+		return s.SendText(text, keyboard)
 
 	default:
 		err := errors.New("unknown keyboard type")

@@ -20,7 +20,7 @@ func (h *StartHandler) CanHandle(s *tg.Session, msg *telegram.Message, clb *tele
 }
 
 func (h *StartHandler) HandleMessage(s *tg.Session, msgText string) {
-	tgview.SendStartMessage(s)
+	tgview.Start{}.Send(s)
 	time.Sleep(delayAfterStartMessage)
-	tgview.SendMenu(s)
+	tgview.Menu{}.Send(s, false)
 }

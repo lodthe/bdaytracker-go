@@ -21,6 +21,10 @@ type DB struct {
 	User     string `env:"DB_USER"`
 	Password string `env:"DB_PASSWORD"`
 	SSLMode  string `env:"DB_SSL_MODE" envDefault:"disable"`
+
+	MaxConnections int `env:"DB_MAX_CONNECTIONS" envDefault:"10"`
+
+	GORMDebug bool `env:"DB_GORM_DEBUG" envDefault:"false"`
 }
 
 func Read() Config {
