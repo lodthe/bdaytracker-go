@@ -1,12 +1,19 @@
 package handle
 
 import (
+	"github.com/petuhovskiy/telegram"
+
 	"github.com/lodthe/bdaytracker-go/tg"
 	"github.com/lodthe/bdaytracker-go/tg/callback"
+	"github.com/lodthe/bdaytracker-go/tg/state"
 	"github.com/lodthe/bdaytracker-go/tg/tgview"
 )
 
 type MenuHandler struct {
+}
+
+func (h *MenuHandler) CanHandle(s *tg.Session, msg *telegram.Message, clb *telegram.CallbackQuery) bool {
+	return s.State.State == state.None && msg != nil
 }
 
 func (h *MenuHandler) Callback() interface{} {
@@ -14,5 +21,10 @@ func (h *MenuHandler) Callback() interface{} {
 }
 
 func (h *MenuHandler) HandleCallback(s *tg.Session, clb interface{}) {
-	tgview.SendMenu(s)
+	cdata := clb.(callback.OpenMenu)
+	tgview.Menu{}.Send(s, cdata.Edit)
+}
+
+func (h *MenuHandler) HandleMessage(s *tg.Session, msgText string) {
+	tgview.Menu{}.Send(s, false)
 }

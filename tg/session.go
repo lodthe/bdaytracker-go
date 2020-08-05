@@ -2,6 +2,7 @@ package tg
 
 import (
 	"github.com/petuhovskiy/telegram"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/lodthe/bdaytracker-go/tg/state"
 )
@@ -18,6 +19,7 @@ type Session struct {
 func NewSession(telegramID int, general *General, update *telegram.Update) (*Session, error) {
 	st, err := state.LoadState(general.DB, telegramID)
 	if err != nil {
+		log.WithField("telegram_iD", telegramID).WithError(err).Error("failed to load the state")
 		return nil, err
 	}
 

@@ -4,7 +4,10 @@ import (
 	"github.com/lodthe/bdaytracker-go/tg"
 )
 
-func SendStartMessage(s *tg.Session) {
+type Start struct {
+}
+
+func (st Start) Send(s *tg.Session) {
 	s.SendInlinePhoto(`Привет! Я умею напоминать про 🎁 Дни Рождения твоих друзей.
 
 Ты можешь добавить информацию самостоятельно или импортировать из ВКонтакте.

@@ -56,7 +56,7 @@ func activateHandler(s *tg.Session, update telegram.Update, handlers ...interfac
 			if !ok {
 				logger.Error("missed HandleCallback method")
 			} else {
-				handler.HandleCallback(s, update.CallbackQuery.Data)
+				handler.HandleCallback(s, callback.Unmarshal(update.CallbackQuery.Data))
 			}
 
 		default:
@@ -77,14 +77,14 @@ func activateHandler(s *tg.Session, update telegram.Update, handlers ...interfac
 	for i := range handlers {
 		var canHandle bool
 
-		switch handler := handlers[i].(type) {
-		case methodCallback:
-			if update.CallbackQuery != nil {
-				canHandle = reflect.TypeOf(callback.Unmarshal(update.CallbackQuery.Data)) == reflect.TypeOf(handler.Callback())
-			}
+		handlerByCallback, ok := handlers[i].(methodCallback)
+		if !canHandle && ok && update.CallbackQuery != nil {
+			canHandle = reflect.TypeOf(callback.Unmarshal(update.CallbackQuery.Data)) == reflect.TypeOf(handlerByCallback.Callback())
+		}
 
-		case methodCanHandle:
-			canHandle = handler.CanHandle(s, update.Message, update.CallbackQuery)
+		handlerByCanHandle, ok := handlers[i].(methodCanHandle)
+		if !canHandle && ok {
+			canHandle = handlerByCanHandle.CanHandle(s, update.Message, update.CallbackQuery)
 		}
 
 		if !canHandle {
