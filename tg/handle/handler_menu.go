@@ -13,7 +13,7 @@ type MenuHandler struct {
 }
 
 func (h *MenuHandler) CanHandle(s *tg.Session, msg *telegram.Message, clb *telegram.CallbackQuery) bool {
-	return s.State.State == state.None && msg != nil
+	return s.State.StateBefore == state.None && msg != nil
 }
 
 func (h *MenuHandler) Callback() interface{} {

@@ -12,8 +12,9 @@ import (
 
 type State struct {
 	gorm.Model
-	TelegramID int
-	State      ID // Conversation state
+	TelegramID  int
+	State       ID // Conversation state
+	StateBefore ID // State before handling current update
 
 	Friends []models.Friend // If there is no limit for rows in the database, it's better to store friends in a separate table
 

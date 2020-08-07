@@ -8,6 +8,8 @@ func Init() {
 	addCallback(FriendsList{})
 	addCallback(Settings{})
 	addCallback(RemoveFriend{})
+	addCallback(RemoveFriendApprove{})
+	addCallback(RemoveFriendCancel{})
 }
 
 type None struct {
@@ -31,5 +33,13 @@ type Settings struct {
 }
 
 type RemoveFriend struct {
+}
+
+type RemoveFriendApprove struct {
 	UUID string
+	Name string
+}
+
+type RemoveFriendCancel struct {
+	Name string
 }

@@ -20,12 +20,12 @@ func (f FriendsList) Send(s *tg.Session, clb callback.FriendsList) {
 	clb.Offset = minInt(clb.Offset, len(s.State.Friends)-1)
 	clb.Offset = maxInt(clb.Offset, 0)
 
-	sorted := &FriendsArray{friends: s.State.Friends}
+	sorted := &FriendsArray{Friends: s.State.Friends}
 	sort.Sort(sorted)
 
 	var friends []models.Friend
-	if len(sorted.friends) != 0 {
-		friends = sorted.friends[clb.Offset:minInt(clb.Offset+pageSize, len(sorted.friends))]
+	if len(sorted.Friends) != 0 {
+		friends = sorted.Friends[clb.Offset:minInt(clb.Offset+pageSize, len(sorted.Friends))]
 	}
 
 	var text string
@@ -56,7 +56,7 @@ func (f FriendsList) keyboard(s *tg.Session, clb callback.FriendsList) [][]teleg
 		}
 	}
 
-	// Insert pagination and delete_friend buttons if the friends list is not empty
+	// Insert pagination and delete_friend buttons if the Friends list is not empty
 	var keyboard [][]telegram.InlineKeyboardButton
 	if len(s.State.Friends) != 0 {
 		keyboard = append(keyboard, [][]telegram.InlineKeyboardButton{

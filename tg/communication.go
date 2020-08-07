@@ -83,27 +83,13 @@ func (s *Session) SendText(text string, keyboard ...telegram.AnyKeyboard) error 
 	}
 }
 
-func (s *Session) SendEditText(text string, keyboard telegram.AnyKeyboard, edit bool) error {
+// SendEditText edits the message received with a callback query.
+// Only InlineKeyboardButton keyboard is supported.
+func (s *Session) SendEditText(text string, keyboard [][]telegram.InlineKeyboardButton, edit bool) error {
 	if !edit || s.LastUpdate.CallbackQuery == nil {
 		return s.SendText(text, keyboard)
 	}
-
-	switch buttons := keyboard.(type) {
-	case [][]telegram.InlineKeyboardButton:
-		return s.editInlineMessage(text, markup.InlineKeyboardMarkup(buttons))
-
-	case [][]telegram.KeyboardButton:
-		log.WithFields(log.Fields{
-			"text":     text,
-			"keyboard": keyboard,
-		}).Error("trying to edit the message with not an inline markup")
-		return s.SendText(text, keyboard)
-
-	default:
-		err := errors.New("unknown keyboard type")
-		log.WithField("keyboard", keyboard).WithError(err).Error("failed to send a telegram message")
-		return err
-	}
+	return s.editInlineMessage(text, markup.InlineKeyboardMarkup(keyboard))
 }
 
 func (s *Session) SendInlinePhoto(text string, file string, keyboard telegram.AnyKeyboard) error {

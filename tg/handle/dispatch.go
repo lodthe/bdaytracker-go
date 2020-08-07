@@ -40,11 +40,17 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 		}).Info("unpack a callback")
 	}
 
+	s.State.StateBefore = s.State.State
+
 	s.AnswerOnLastCallback()
 	activateHandler(s, update,
 		&StartHandler{},
 		&AddFriendHandler{},
 		&FriendsListHandler{},
+
+		&RemoveFriendHandler{},
+		&RemoveFriendApproveHandler{},
+		&RemoveFriendCancelHandler{},
 
 		&MenuHandler{},
 	)

@@ -68,10 +68,11 @@ func activateHandler(s *tg.Session, update telegram.Update, handlers ...interfac
 
 	for i := range handlers {
 		handler, ok := handlers[i].(methodState)
-		if !ok || handler.State() != s.State.State {
+		if !ok || handler.State() != s.State.StateBefore {
 			continue
 		}
 		activate(handlers[i])
+		return
 	}
 
 	for i := range handlers {
