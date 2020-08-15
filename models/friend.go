@@ -4,7 +4,7 @@ type Friend struct {
 	UUID string
 
 	Name string
-	VKID *string
+	VKID *int
 
 	BDay   int
 	BMonth int

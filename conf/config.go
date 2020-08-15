@@ -7,11 +7,16 @@ import (
 
 type Config struct {
 	Telegram Telegram
+	VK       VK
 	DB       DB
 }
 
 type Telegram struct {
 	BotToken string `env:"TELEGRAM_BOT_TOKEN,required"`
+}
+
+type VK struct {
+	Token string `env:"VK_TOKEN"`
 }
 
 type DB struct {

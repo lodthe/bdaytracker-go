@@ -1,10 +1,10 @@
 package handle
 
 import (
-	"sort"
 	"strconv"
 	"strings"
 
+	"github.com/lodthe/bdaytracker-go/helpers"
 	"github.com/lodthe/bdaytracker-go/models"
 	"github.com/lodthe/bdaytracker-go/tg"
 	"github.com/lodthe/bdaytracker-go/tg/callback"
@@ -59,17 +59,16 @@ func (h *RemoveFriendHandler) findByName(s *tg.Session, name string, friends []m
 }
 
 func (h *RemoveFriendHandler) handleIndexOrName(s *tg.Session, msgText string) {
-	friends := &tgview.FriendsArray{Friends: s.State.Friends}
-	sort.Sort(friends)
+	sorted := helpers.SortFriends(s.State.Friends)
 
 	var friend models.Friend
 	var found bool
 
 	index, err := strconv.Atoi(msgText)
 	if err != nil {
-		friend, found = h.findByName(s, msgText, friends.Friends)
+		friend, found = h.findByName(s, msgText, sorted)
 	} else {
-		friend, found = h.findByIndex(s, index, friends.Friends)
+		friend, found = h.findByIndex(s, index, sorted)
 	}
 
 	if !found {

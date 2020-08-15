@@ -6,4 +6,5 @@ const (
 	None ID = iota
 	AddFriend
 	RemoveFriend
+	ImportFromVK
 )

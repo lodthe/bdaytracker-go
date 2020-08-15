@@ -1,10 +1,9 @@
 package tgview
 
 import (
-	"sort"
-
 	"github.com/petuhovskiy/telegram"
 
+	"github.com/lodthe/bdaytracker-go/helpers"
 	"github.com/lodthe/bdaytracker-go/models"
 	"github.com/lodthe/bdaytracker-go/tg"
 	"github.com/lodthe/bdaytracker-go/tg/callback"
@@ -20,12 +19,11 @@ func (f FriendsList) Send(s *tg.Session, clb callback.FriendsList) {
 	clb.Offset = minInt(clb.Offset, len(s.State.Friends)-1)
 	clb.Offset = maxInt(clb.Offset, 0)
 
-	sorted := &FriendsArray{Friends: s.State.Friends}
-	sort.Sort(sorted)
+	sorted := helpers.SortFriends(s.State.Friends)
 
 	var friends []models.Friend
-	if len(sorted.Friends) != 0 {
-		friends = sorted.Friends[clb.Offset:minInt(clb.Offset+pageSize, len(sorted.Friends))]
+	if len(sorted) != 0 {
+		friends = sorted[clb.Offset:minInt(clb.Offset+pageSize, len(sorted))]
 	}
 
 	var text string

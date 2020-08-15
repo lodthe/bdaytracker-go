@@ -14,7 +14,7 @@ import (
 func formatFriend(friend models.Friend) string {
 	name := fmt.Sprintf("<code>%s</code>", friend.Name)
 	if friend.VKID != nil {
-		name = fmt.Sprintf("<a href=\"vk.com/%s\">%s</a>", *friend.VKID, friend.Name)
+		name = fmt.Sprintf("<a href=\"vk.com/id%d\">%s</a>", *friend.VKID, friend.Name)
 	}
 
 	if friend.BMonth == 0 || friend.BDay == 0 {
