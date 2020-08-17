@@ -10,6 +10,7 @@ func Init() {
 	addCallback(RemoveFriend{})
 	addCallback(RemoveFriendApprove{})
 	addCallback(RemoveFriendCancel{})
+	addCallback(RemoveFromVK{})
 }
 
 type None struct {
@@ -42,4 +43,7 @@ type RemoveFriendApprove struct {
 
 type RemoveFriendCancel struct {
 	Name string
+}
+
+type RemoveFromVK struct {
 }

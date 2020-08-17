@@ -7,16 +7,12 @@ import (
 type AddFromVK struct {
 }
 
-func (f AddFromVK) AskForID(s *tg.Session, edit bool) {
+func (f AddFromVK) AskForID(s *tg.Session) {
 	text := `Отправь свой ID профиля ВКонтакте, чтобы я смог получить информацию о твоих друзья.
 
 Узнать свой ID можно <a href="https://regvk.com/id/">здесь</a>.`
 
-	if edit {
-		s.SendEditText(text, nil, true)
-	} else {
-		s.SendText(text, cancelKeyboard())
-	}
+	s.SendText(text, cancelKeyboard())
 }
 
 func (f AddFromVK) IDIsNotANumber(s *tg.Session) {

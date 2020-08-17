@@ -11,8 +11,8 @@ import (
 )
 
 type State struct {
-	gorm.Model
 	TelegramID  int
+	VKID        int
 	State       ID // Conversation state
 	StateBefore ID // State before handling current update
 

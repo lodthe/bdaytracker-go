@@ -15,13 +15,7 @@ type RemoveFriend struct {
 }
 
 func (f RemoveFriend) AskIndexOrName(s *tg.Session) {
-	s.SendText("Отправь полное имя друга из списка друзей.", [][]telegram.KeyboardButton{
-		{
-			{
-				Text: btn.Cancel,
-			},
-		},
-	})
+	s.SendText("Отправь полное имя друга или его номер из списка друзей.", cancelKeyboard())
 }
 
 func (f RemoveFriend) WrongIndex(s *tg.Session) {

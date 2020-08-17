@@ -52,6 +52,7 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 		&RemoveFriendApproveHandler{},
 		&RemoveFriendCancelHandler{},
 		&AddFromVKHandler{},
+		&RemoveFromVKHandler{},
 
 		&MenuHandler{},
 	)

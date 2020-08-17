@@ -64,6 +64,7 @@ func (f FriendsList) keyboard(s *tg.Session, clb callback.FriendsList) [][]teleg
 			},
 			{
 				callback.Button(btn.RemoveFriend, callback.RemoveFriend{}),
+				callback.Button(btn.RemoveFromVK, callback.RemoveFromVK{}),
 			},
 		}...)
 	}

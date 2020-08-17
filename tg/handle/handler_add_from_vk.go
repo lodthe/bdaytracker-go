@@ -26,7 +26,7 @@ func (h *AddFromVKHandler) Callback() interface{} {
 
 func (h *AddFromVKHandler) HandleCallback(s *tg.Session, clb interface{}) {
 	s.State.State = state.ImportFromVK
-	tgview.AddFromVK{}.AskForID(s, true)
+	tgview.AddFromVK{}.AskForID(s)
 }
 
 func (h *AddFromVKHandler) HandleMessage(s *tg.Session, msgText string) {
@@ -47,13 +47,14 @@ func (h *AddFromVKHandler) handleVKID(s *tg.Session, vkID string) {
 		return
 	}
 
+	s.State.VKID = id
 	friendsToAdd, err := s.VKCli.GetFriends(id)
 	if apiErrors.GetType(err) == apiErrors.PrivateProfile {
 		tgview.AddFromVK{}.ProfileIsHidden(s)
 		return
 	}
 	if err != nil {
-		tgview.AddFromVK{}.AskForID(s, false)
+		tgview.AddFromVK{}.AskForID(s)
 		return
 	}
 
