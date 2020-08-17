@@ -40,11 +40,14 @@ func NewClient(token string) *Client {
 }
 
 func (c *Client) GetFriends(id int) ([]models.Friend, error) {
+	const langRU = 0
+
 	logger := log.WithField("user_id", id)
 	logger.Info("start getting VK friends")
 
 	response := <-c.rateLimiter.Execute(func() (interface{}, error) {
 		friendsParams := params.NewFriendsGetBuilder()
+		friendsParams.Lang(langRU)
 		friendsParams.UserID(id)
 		friendsParams.Fields([]string{
 			"uid",
