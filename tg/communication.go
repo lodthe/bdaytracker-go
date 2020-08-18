@@ -13,22 +13,32 @@ import (
 
 const parseMode = "HTML"
 
+var errBotWasBlocked = "Forbidden: bot was blocked by the user"
+var errUserIsDeactivated = "Forbidden: user is deactivated"
+
 func (s *Session) AnswerOnLastCallback() {
 	if s.LastUpdate == nil || s.LastUpdate.CallbackQuery == nil {
 		return
 	}
-	s.Bot.AnswerCallbackQuery(&telegram.AnswerCallbackQueryRequest{
-		CallbackQueryID: s.LastUpdate.CallbackQuery.ID,
+	_, _ = s.Executor.Execute(func() (interface{}, error) {
+		return s.Bot.AnswerCallbackQuery(&telegram.AnswerCallbackQueryRequest{
+			CallbackQueryID: s.LastUpdate.CallbackQuery.ID,
+		})
 	})
 }
 
 func (s *Session) sendMessage(text string, keyboard telegram.AnyKeyboard) error {
-	_, err := s.Bot.SendMessage(&telegram.SendMessageRequest{
-		ChatID:                strconv.Itoa(s.TelegramID),
-		Text:                  text,
-		ParseMode:             parseMode,
-		DisableWebPagePreview: true,
-		ReplyMarkup:           keyboard,
+	if s.State.CannotReceiveMessages {
+		return nil
+	}
+	_, err := s.Executor.Execute(func() (interface{}, error) {
+		return s.Bot.SendMessage(&telegram.SendMessageRequest{
+			ChatID:                strconv.Itoa(s.TelegramID),
+			Text:                  text,
+			ParseMode:             parseMode,
+			DisableWebPagePreview: true,
+			ReplyMarkup:           keyboard,
+		})
 	})
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -36,19 +46,26 @@ func (s *Session) sendMessage(text string, keyboard telegram.AnyKeyboard) error 
 			"message_text": text,
 		}).WithError(err).Error("failed to send the message")
 	}
+	s.onTelegramError(err)
 	return err
 }
 
 func (s *Session) editInlineMessage(text string, keyboard *telegram.InlineKeyboardMarkup) error {
-	_, err := s.Bot.EditMessageText(&telegram.EditMessageTextRequest{
-		ChatID:                strconv.Itoa(s.TelegramID),
-		MessageID:             s.LastUpdate.CallbackQuery.Message.MessageID,
-		InlineMessageID:       s.LastUpdate.CallbackQuery.InlineMessageID,
-		Text:                  text,
-		ParseMode:             parseMode,
-		DisableWebPagePreview: true,
-		ReplyMarkup:           keyboard,
+	if s.State.CannotReceiveMessages {
+		return nil
+	}
+	_, err := s.Executor.Execute(func() (interface{}, error) {
+		return s.Bot.EditMessageText(&telegram.EditMessageTextRequest{
+			ChatID:                strconv.Itoa(s.TelegramID),
+			MessageID:             s.LastUpdate.CallbackQuery.Message.MessageID,
+			InlineMessageID:       s.LastUpdate.CallbackQuery.InlineMessageID,
+			Text:                  text,
+			ParseMode:             parseMode,
+			DisableWebPagePreview: true,
+			ReplyMarkup:           keyboard,
+		})
 	})
+
 	if err != nil {
 		log.WithFields(log.Fields{
 			"telegram_id":    s.TelegramID,
@@ -56,6 +73,7 @@ func (s *Session) editInlineMessage(text string, keyboard *telegram.InlineKeyboa
 			"callback_query": s.LastUpdate.CallbackQuery,
 		}).WithError(err).Error("failed to edit the message")
 	}
+	s.onTelegramError(err)
 	return err
 }
 
@@ -93,12 +111,17 @@ func (s *Session) SendEditText(text string, keyboard [][]telegram.InlineKeyboard
 }
 
 func (s *Session) SendInlinePhoto(text string, file string, keyboard telegram.AnyKeyboard) error {
-	_, err := s.Bot.SendPhoto(&telegram.SendPhotoRequest{
-		ChatID:      strconv.Itoa(s.TelegramID),
-		Photo:       static.NewFileReader(file),
-		Caption:     text,
-		ParseMode:   parseMode,
-		ReplyMarkup: keyboard,
+	if s.State.CannotReceiveMessages {
+		return nil
+	}
+	_, err := s.Executor.Execute(func() (interface{}, error) {
+		return s.Bot.SendPhoto(&telegram.SendPhotoRequest{
+			ChatID:      strconv.Itoa(s.TelegramID),
+			Photo:       static.NewFileReader(file),
+			Caption:     text,
+			ParseMode:   parseMode,
+			ReplyMarkup: keyboard,
+		})
 	})
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -107,5 +130,20 @@ func (s *Session) SendInlinePhoto(text string, file string, keyboard telegram.An
 			"file":         file,
 		}).WithError(err).Error("failed to send the message")
 	}
+	s.onTelegramError(err)
 	return err
+}
+
+func (s *Session) onTelegramError(err error) {
+	if err == nil {
+		return
+	}
+
+	switch err.Error() {
+	case errBotWasBlocked:
+		s.State.CannotReceiveMessages = true
+
+	case errUserIsDeactivated:
+		s.State.CannotReceiveMessages = true
+	}
 }

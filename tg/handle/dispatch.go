@@ -41,6 +41,7 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 	}
 
 	s.State.StateBefore = s.State.State
+	s.State.CannotReceiveMessages = false // If we receive an update from the user, they can receive our messages
 
 	s.AnswerOnLastCallback()
 	activateHandler(s, update,

@@ -11,6 +11,7 @@ import (
 
 	"github.com/lodthe/bdaytracker-go/migration"
 	"github.com/lodthe/bdaytracker-go/tg/callback"
+	"github.com/lodthe/bdaytracker-go/tg/tglimiter"
 	vk "github.com/lodthe/bdaytracker-go/vk"
 
 	"github.com/lodthe/bdaytracker-go/conf"
@@ -31,11 +32,14 @@ func main() {
 
 	vkCli := vk.NewClient(config.VK.Token)
 
+	telegramExecutor := tglimiter.NewExecutor()
+
 	general := tg.General{
-		Bot:    bot,
-		DB:     db,
-		Config: config,
-		VKCli:  vkCli,
+		Bot:      bot,
+		Executor: telegramExecutor,
+		DB:       db,
+		Config:   config,
+		VKCli:    vkCli,
 	}
 
 	// Start getting updates from Telegram

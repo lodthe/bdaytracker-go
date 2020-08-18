@@ -18,6 +18,8 @@ type State struct {
 
 	Friends []models.Friend // If there is no limit for rows in the database, it's better to store friends in a separate table
 
+	CannotReceiveMessages bool // It's true, for example, when the user blocked the bot
+
 	// Conversation models. They keep information that the user has already sent.
 
 	NewFriend models.Friend
