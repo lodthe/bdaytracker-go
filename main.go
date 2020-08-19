@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -11,6 +12,8 @@ import (
 
 	"github.com/lodthe/bdaytracker-go/migration"
 	"github.com/lodthe/bdaytracker-go/tg/callback"
+	"github.com/lodthe/bdaytracker-go/tg/notifications"
+	"github.com/lodthe/bdaytracker-go/tg/sessionstorage"
 	"github.com/lodthe/bdaytracker-go/tg/tglimiter"
 	vk "github.com/lodthe/bdaytracker-go/vk"
 
@@ -24,6 +27,8 @@ import (
 func main() {
 	setupLogging()
 	config := conf.Read()
+
+	globalContext, cancel := context.WithCancel(context.Background())
 
 	db := setupGORM(config.DB)
 
@@ -50,8 +55,14 @@ func main() {
 		log.WithError(err).Fatal("failed to start the polling")
 	}
 
-	collector := handle.NewUpdatesCollector()
+	sessionStorage := sessionstorage.NewStorage()
+
+	go notifications.NewService(db, &general, sessionStorage).Run(globalContext)
+
+	collector := handle.NewUpdatesCollector(sessionStorage)
 	collector.Start(general, ch)
+
+	cancel()
 }
 
 func setupLogging() {

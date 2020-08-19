@@ -19,7 +19,7 @@ type Session struct {
 func NewSession(telegramID int, general *General, update *telegram.Update) (*Session, error) {
 	st, err := state.LoadState(general.DB, telegramID)
 	if err != nil {
-		log.WithField("telegram_iD", telegramID).WithError(err).Error("failed to load the state")
+		log.WithField("telegram_id", telegramID).WithError(err).Error("failed to load the state")
 		return nil, err
 	}
 
