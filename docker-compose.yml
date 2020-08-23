@@ -12,5 +12,20 @@ services:
     ports:
     - "${DB_PORT}:5432"
 
+  app:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      GORM_DEBUG: ${GORM_DEBUG}
+      VK_TOKEN: ${VK_TOKEN}
+    restart: unless-stopped
+
 volumes:
   postgres-data:
