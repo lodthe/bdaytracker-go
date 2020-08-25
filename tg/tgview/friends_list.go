@@ -69,11 +69,16 @@ func (f FriendsList) keyboard(s *tg.Session, clb callback.FriendsList) [][]teleg
 		}...)
 	}
 
-	return append(keyboard, []telegram.InlineKeyboardButton{
-		callback.Button(btn.Menu, callback.OpenMenu{
-			Edit: true,
-		}),
-	})
+	return append(keyboard,
+		[]telegram.InlineKeyboardButton{
+			callback.Button(btn.FriendsList, callback.FriendsList{}),
+		},
+		[]telegram.InlineKeyboardButton{
+			callback.Button(btn.Menu, callback.OpenMenu{
+				Edit: true,
+			},
+			),
+		})
 }
 
 func minInt(a, b int) int {

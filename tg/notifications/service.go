@@ -18,6 +18,7 @@ import (
 )
 
 const notificationsStartHour = 7
+const notificationsEndHour = 10
 const maxNotificationsInSecond = 15
 
 type Service struct {
@@ -97,6 +98,9 @@ func (s *Service) readStates() ([]*state.State, error) {
 
 func (s *Service) sendNotifications() {
 	if time.Now().Hour() < notificationsStartHour {
+		return
+	}
+	if time.Now().Hour() > notificationsEndHour {
 		return
 	}
 
