@@ -71,7 +71,7 @@ func (f FriendsList) keyboard(s *tg.Session, clb callback.FriendsList) [][]teleg
 
 	return append(keyboard,
 		[]telegram.InlineKeyboardButton{
-			callback.Button(btn.FriendsList, callback.FriendsList{}),
+			callback.Button(btn.AddFriend, callback.AddFriend{}),
 		},
 		[]telegram.InlineKeyboardButton{
 			callback.Button(btn.Menu, callback.OpenMenu{
