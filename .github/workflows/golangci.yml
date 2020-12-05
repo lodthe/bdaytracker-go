@@ -10,6 +10,6 @@ jobs:
       - name: GolangCI-Lint Action
         uses: golangci/golangci-lint-action@v1
         with:
-          version: v1.28
+          version: v1.29
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

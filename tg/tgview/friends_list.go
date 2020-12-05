@@ -57,16 +57,19 @@ func (f FriendsList) keyboard(s *tg.Session, clb callback.FriendsList) [][]teleg
 	// Insert pagination and delete_friend buttons if the Friends list is not empty
 	var keyboard [][]telegram.InlineKeyboardButton
 	if len(s.State.Friends) != 0 {
-		keyboard = append(keyboard, [][]telegram.InlineKeyboardButton{
-			{
-				callback.Button(btn.Prev, prev),
-				callback.Button(btn.Next, next),
-			},
-			{
-				callback.Button(btn.RemoveFriend, callback.RemoveFriend{}),
-				callback.Button(btn.RemoveFromVK, callback.RemoveFromVK{}),
-			},
-		}...)
+		keyboard = append(keyboard, []telegram.InlineKeyboardButton{
+			callback.Button(btn.Prev, prev),
+			callback.Button(btn.Next, next),
+		})
+
+		removeButtons := []telegram.InlineKeyboardButton{
+			callback.Button(btn.RemoveFriend, callback.RemoveFriend{}),
+		}
+		if s.State.VKID != 0 {
+			removeButtons = append(removeButtons, callback.Button(btn.RemoveFromVK, callback.RemoveFromVK{}))
+		}
+
+		keyboard = append(keyboard, removeButtons)
 	}
 
 	return append(keyboard,
