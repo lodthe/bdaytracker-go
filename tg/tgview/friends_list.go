@@ -12,10 +12,10 @@ import (
 
 const pageSize int = 15
 
-type FriendsList struct {
+type FriendList struct {
 }
 
-func (f FriendsList) Send(s *tg.Session, clb callback.FriendsList) {
+func (f FriendList) Send(s *tg.Session, clb callback.FriendList) {
 	clb.Offset = minInt(clb.Offset, len(s.State.Friends)-1)
 	clb.Offset = maxInt(clb.Offset, 0)
 
@@ -40,16 +40,16 @@ func (f FriendsList) Send(s *tg.Session, clb callback.FriendsList) {
 	s.SendEditText(text, f.keyboard(s, clb), true)
 }
 
-func (f FriendsList) keyboard(s *tg.Session, clb callback.FriendsList) [][]telegram.InlineKeyboardButton {
+func (f FriendList) keyboard(s *tg.Session, clb callback.FriendList) [][]telegram.InlineKeyboardButton {
 	var prev interface{} = callback.None{}
 	var next interface{} = callback.None{}
 	if clb.Offset > 0 {
-		prev = callback.FriendsList{
+		prev = callback.FriendList{
 			Offset: maxInt(0, clb.Offset-pageSize),
 		}
 	}
 	if clb.Offset+pageSize < len(s.State.Friends) {
-		next = callback.FriendsList{
+		next = callback.FriendList{
 			Offset: clb.Offset + pageSize,
 		}
 	}

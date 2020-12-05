@@ -6,14 +6,14 @@ import (
 	"github.com/lodthe/bdaytracker-go/tg/tgview"
 )
 
-type FriendsListHandler struct {
+type FriendListHandler struct {
 }
 
-func (h *FriendsListHandler) Callback() interface{} {
-	return callback.FriendsList{}
+func (h *FriendListHandler) Callback() interface{} {
+	return callback.FriendList{}
 }
 
-func (h *FriendsListHandler) HandleCallback(s *tg.Session, clb interface{}) {
-	cdata := clb.(callback.FriendsList)
-	tgview.FriendsList{}.Send(s, cdata)
+func (h *FriendListHandler) HandleCallback(s *tg.Session, clb interface{}) {
+	cdata := clb.(callback.FriendList)
+	tgview.FriendList{}.Send(s, cdata)
 }

@@ -5,7 +5,7 @@ func Init() {
 	addCallback(OpenMenu{})
 	addCallback(AddFriend{})
 	addCallback(AddFromVK{})
-	addCallback(FriendsList{})
+	addCallback(FriendList{})
 	addCallback(Settings{})
 	addCallback(RemoveFriend{})
 	addCallback(RemoveFriendApprove{})
@@ -26,7 +26,7 @@ type AddFriend struct {
 type AddFromVK struct {
 }
 
-type FriendsList struct {
+type FriendList struct {
 	Offset int // How many friends should be skipped
 }
 
