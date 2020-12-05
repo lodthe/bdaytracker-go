@@ -47,7 +47,7 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 	activateHandler(s, update,
 		&StartHandler{},
 		&AddFriendHandler{},
-		&FriendsListHandler{},
+		&FriendListHandler{},
 
 		&RemoveFriendHandler{},
 		&RemoveFriendApproveHandler{},

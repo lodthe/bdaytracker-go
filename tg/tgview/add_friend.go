@@ -5,6 +5,7 @@ import (
 
 	"github.com/lodthe/bdaytracker-go/models"
 	"github.com/lodthe/bdaytracker-go/tg"
+	"github.com/lodthe/bdaytracker-go/tg/callback"
 	"github.com/lodthe/bdaytracker-go/tg/tgview/btn"
 )
 
@@ -43,7 +44,17 @@ func (a AddFriend) Cancel(s *tg.Session) {
 }
 
 func (a AddFriend) Success(s *tg.Session, newFriend models.Friend) {
-	_ = s.SendText("<code>"+newFriend.Name+"</code> успешно добавлен(а) в список друзей!", Menu{}.Keyboard())
+	keyboard := [][]telegram.InlineKeyboardButton{
+		{
+			callback.Button(btn.AddFriend, callback.AddFriend{}),
+		},
+		{
+			callback.Button(btn.FriendList, callback.FriendList{}),
+			callback.Button(btn.Menu, callback.OpenMenu{}),
+		},
+	}
+
+	_ = s.SendText("<code>"+newFriend.Name+"</code> успешно добавлен(а) в список друзей!", keyboard)
 }
 
 func (a AddFriend) send(s *tg.Session, text string) {

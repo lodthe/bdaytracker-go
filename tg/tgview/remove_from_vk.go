@@ -14,7 +14,7 @@ type RemoveFromVK struct {
 func (f RemoveFromVK) Success(s *tg.Session) {
 	_ = s.SendEditText("✅ Информация о друзьях из ВКонтакте удалена!", [][]telegram.InlineKeyboardButton{
 		{
-			callback.Button(btn.FriendsList, callback.FriendsList{}),
+			callback.Button(btn.FriendList, callback.FriendList{}),
 		},
 		{
 			callback.Button(btn.Menu, callback.OpenMenu{}),
