@@ -17,7 +17,7 @@ func newRateLimiter() *limiter.RateLimiter {
 	cfg := config.NewConfigWithQuotas([]*config.Quota{
 		config.NewQuota(maxRequestsInSecond, time.Second),
 	})
-	cfg.Concurrency = maxRequestsInSecond
+	cfg.Concurrency = 1
 
 	rateLimiter, _ := limiter.NewRateLimiter(cfg)
 	rateLimiter.Start()
