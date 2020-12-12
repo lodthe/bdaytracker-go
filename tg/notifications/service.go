@@ -33,7 +33,7 @@ func newRateLimiter() *limiter.RateLimiter {
 	cfg := config.NewConfigWithQuotas([]*config.Quota{
 		config.NewQuota(maxNotificationsInSecond, time.Second),
 	})
-	cfg.Concurrency = maxNotificationsInSecond
+	cfg.Concurrency = 1
 
 	rateLimiter, _ := limiter.NewRateLimiter(cfg)
 	rateLimiter.Start()
