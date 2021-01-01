@@ -4,6 +4,7 @@ github.com/SevereCloud/vksdk v1.10.0/go.mod h1:BUxU4W2WoFwFU83aopUmXKTjbdgDgEDCT
 github.com/andybalholm/cascadia v1.1.0/go.mod h1:GsXiBklL0woXo1j/WYWtSYYC4ouU9PqHO0sqidkEA4Y=
 github.com/caarlos0/env/v6 v6.3.0 h1:PaqGnS5iHScZ5SnZNBPvQbA2VE/eMAwlp51mKGuEZLg=
 github.com/caarlos0/env/v6 v6.3.0/go.mod h1:nXKfztzgWXH0C5Adnp+gb+vXHmMjKdBnMrSVSczSkiw=
+github.com/caarlos0/env/v6 v6.4.0/go.mod h1:MX/8qQ2zCofGGkb7FxjmDLOOjUylO2b7dbsIpN30bnY=
 github.com/chatex-com/rate-limiter v1.0.2 h1:sI63GIKwbilUhpagWSv15I+5gHk8OgKNKXWf57kyryA=
 github.com/chatex-com/rate-limiter v1.0.2/go.mod h1:AdV8z4eC4EhDmvWdmzRaTeuJiPgj843XIRTNl6ZiKYo=
 github.com/dave/jennifer v1.4.0/go.mod h1:fIb+770HOpJ2fmN9EPPKOqm1vMGhB+TwXKMZhrIygKg=
