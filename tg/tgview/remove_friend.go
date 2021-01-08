@@ -43,14 +43,16 @@ func (f RemoveFriend) AskForApprove(s *tg.Session, friend models.Friend) {
 
 func (f RemoveFriend) Approved(s *tg.Session, clb callback.RemoveFriendApprove) {
 	text := fmt.Sprintf("<b>%s</b> удален(а) из списка друзей.", clb.Name)
-	s.SendEditText(text, nil, true)
+	_ = s.DeleteLastMessage()
+	_ = s.SendText(text, menuKeyboard())
 }
 
 func (f RemoveFriend) Cancelled(s *tg.Session, clb callback.RemoveFriendCancel) {
 	text := fmt.Sprintf("<b>%s</b> остается в списке друзей!", clb.Name)
-	s.SendEditText(text, nil, true)
+	_ = s.DeleteLastMessage()
+	_ = s.SendText(text, menuKeyboard())
 }
 
 func (f RemoveFriend) Cancel(s *tg.Session) {
-	s.SendText("Отменено.", Menu{}.Keyboard())
+	_ = s.SendText("Отменено.", Menu{}.Keyboard())
 }
