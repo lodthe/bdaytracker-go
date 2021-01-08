@@ -43,6 +43,8 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 	s.State.StateBefore = s.State.State
 	s.State.CannotReceiveMessages = false // If we receive an update from the user, they can receive our messages
 
+	updateUserInfo(s, update)
+
 	s.AnswerOnLastCallback()
 	activateHandler(s, update,
 		&StartHandler{},
@@ -62,4 +64,26 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 	if err != nil {
 		log.WithField("telegram_id", sessionTelegramID).WithError(err).Error("failed to save the state")
 	}
+}
+
+// updateUserInfo saves the user's name, username and language code.
+func updateUserInfo(s *tg.Session, update telegram.Update) {
+	var user *telegram.User
+
+	switch {
+	case update.Message != nil && update.Message.From != nil:
+		user = update.Message.From
+
+	case update.CallbackQuery != nil && update.CallbackQuery.From != nil:
+		user = update.CallbackQuery.From
+	}
+
+	if user == nil {
+		return
+	}
+
+	s.State.Username = user.Username
+	s.State.FirstName = user.FirstName
+	s.State.LastName = user.LastName
+	s.State.LanguageCode = user.LanguageCode
 }

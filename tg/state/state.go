@@ -13,10 +13,16 @@ import (
 )
 
 type State struct {
-	TelegramID  int
-	VKID        int
 	State       ID // Conversation state
 	StateBefore ID // State before handling current update
+
+	TelegramID   int
+	Username     string
+	FirstName    string
+	LastName     string
+	LanguageCode string
+
+	VKID int
 
 	Friends []models.Friend // If there is no limit for rows in the database, it's better to store friends in a separate table
 
