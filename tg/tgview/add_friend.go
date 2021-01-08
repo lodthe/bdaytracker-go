@@ -54,7 +54,7 @@ func (a AddFriend) Success(s *tg.Session, newFriend models.Friend) {
 		},
 	}
 
-	_ = s.SendText("👥", telegram.ReplyKeyboardRemove{})
+	_ = s.SendText("👥", menuKeyboard())
 	_ = s.SendText("<code>"+newFriend.Name+"</code> успешно добавлен(а) в список друзей!", keyboard)
 }
 
