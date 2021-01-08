@@ -93,9 +93,10 @@ func (h *AddFriendHandler) handleDate(s *tg.Session, msgText string) {
 		return
 	}
 
-	s.State.NewFriend.UUID = fmt.Sprint(uuid.New())
+	friend.UUID = fmt.Sprint(uuid.New())
 	s.State.Friends = append(s.State.Friends, friend)
 	s.State.State = state.None
+	s.State.NewFriend = models.Friend{}
 
 	tgview.AddFriend{}.Success(s, friend)
 }
