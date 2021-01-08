@@ -31,5 +31,6 @@ func (n Notifications) WishYourFriendsHappyBirthday(s *tg.Session) (birthdaysNum
 	if err != nil {
 		return 0, err
 	}
+
 	return birthdaysNumber, nil
 }

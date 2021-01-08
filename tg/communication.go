@@ -94,6 +94,9 @@ func (s *Session) SendText(text string, keyboard ...telegram.AnyKeyboard) error 
 			Selective:       true,
 		})
 
+	case telegram.ReplyKeyboardRemove:
+		return s.sendMessage(text, telegram.ReplyKeyboardRemove{})
+
 	default:
 		err := errors.New("unknown keyboard type")
 		log.WithField("keyboard", keyboard).WithError(err).Error("failed to send a telegram message")
@@ -146,4 +149,31 @@ func (s *Session) onTelegramError(err error) {
 	case errUserIsDeactivated:
 		s.State.CannotReceiveMessages = true
 	}
+}
+
+func (s *Session) DeleteLastMessage() error {
+	if s.State.CannotReceiveMessages {
+		return nil
+	}
+	if s.LastUpdate.CallbackQuery == nil {
+		return errors.New("last update is not a callback query")
+	}
+
+	msg := s.LastUpdate.CallbackQuery.Message
+	_, err := s.Executor.Execute(func() (interface{}, error) {
+		return s.Bot.DeleteMessage(&telegram.DeleteMessageRequest{
+			ChatID:    strconv.Itoa(msg.Chat.ID),
+			MessageID: msg.MessageID,
+		})
+	})
+	if err != nil {
+		log.WithFields(log.Fields{
+			"telegram_id": s.TelegramID,
+			"message":     msg,
+		}).WithError(err).Error("failed to delete the last message")
+	}
+
+	s.onTelegramError(err)
+
+	return err
 }
