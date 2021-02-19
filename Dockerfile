@@ -33,4 +33,6 @@ RUN apk add --update \
 
 COPY --from=go-builder /app ./
 
+COPY . .
+
 CMD [ "./app" ]
