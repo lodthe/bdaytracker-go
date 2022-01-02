@@ -20,14 +20,14 @@ type Session struct {
 	State *state.State
 }
 
-func NewSession(vk *vk.Client, bot *telegram.Bot, executor *tglimiter.Executor, repo state.Repository, telegramID int, update *telegram.Update) (*Session, error) {
+func NewSession(vkCli *vk.Client, bot *telegram.Bot, executor *tglimiter.Executor, repo state.Repository, telegramID int, update *telegram.Update) (*Session, error) {
 	st, err := repo.Get(telegramID)
 	if err != nil {
 		return nil, errors.Wrap(err, "state loading failed")
 	}
 
 	return &Session{
-		VKCli:      vk,
+		VKCli:      vkCli,
 		Bot:        bot,
 		Executor:   executor,
 		TelegramID: telegramID,
