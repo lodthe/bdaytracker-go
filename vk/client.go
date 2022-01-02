@@ -7,7 +7,7 @@ import (
 	"github.com/SevereCloud/vksdk/api/params"
 	limiter "github.com/chatex-com/rate-limiter"
 	"github.com/chatex-com/rate-limiter/pkg/config"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 
 	"github.com/lodthe/bdaytracker-go/models"
 )
@@ -42,7 +42,7 @@ func NewClient(token string) *Client {
 func (c *Client) GetFriends(id int) ([]models.Friend, error) {
 	const langRU = 0
 
-	logger := log.WithField("user_id", id)
+	logger := logrus.WithField("user_id", id)
 	logger.Info("start getting VK friends")
 
 	response := <-c.rateLimiter.Execute(func() (interface{}, error) {

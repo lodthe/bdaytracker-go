@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3'
 
 services:
   postgres:
@@ -10,7 +10,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data/
     ports:
-      - "${DB_PORT}:5432"
+      - 50005:5432
     restart: always
 
   app:
@@ -19,12 +19,8 @@ services:
       - postgres
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-      DB_HOST: postgres
-      DB_PORT: 5432
+      DB_POSTGRES_DSN: "host=postgres port=5432 user=${DB_USER} password=${DB_PASSWORD} dbname=${DB_NAME} sslmode=disable"
       DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      GORM_DEBUG: ${GORM_DEBUG}
       VK_TOKEN: ${VK_TOKEN}
     restart: always
 

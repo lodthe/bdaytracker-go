@@ -8,8 +8,7 @@ import (
 
 	limiter "github.com/chatex-com/rate-limiter"
 	"github.com/chatex-com/rate-limiter/pkg/config"
-	"github.com/jinzhu/gorm"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 
 	"github.com/lodthe/bdaytracker-go/tg"
 	"github.com/lodthe/bdaytracker-go/tg/sessionstorage"
@@ -22,9 +21,9 @@ const notificationsEndHour = 10
 const maxNotificationsInSecond = 15
 
 type Service struct {
-	db      *gorm.DB
-	general *tg.General
-	storage *sessionstorage.Storage
+	stateRepo state.Repository
+	general   *tg.General
+	storage   *sessionstorage.Storage
 
 	rateLimiter *limiter.RateLimiter
 }
@@ -41,9 +40,9 @@ func newRateLimiter() *limiter.RateLimiter {
 	return rateLimiter
 }
 
-func NewService(db *gorm.DB, general *tg.General, storage *sessionstorage.Storage) *Service {
+func NewService(repo state.Repository, general *tg.General, storage *sessionstorage.Storage) *Service {
 	return &Service{
-		db:          db,
+		stateRepo:   repo,
 		general:     general,
 		storage:     storage,
 		rateLimiter: newRateLimiter(),
@@ -54,7 +53,7 @@ func (s *Service) Run(ctx context.Context) {
 	const window = time.Minute * 15
 	ticker := time.NewTicker(window)
 
-	log.Info("started the notification service")
+	logrus.Info("started the notification service")
 
 	for {
 		select {
@@ -68,32 +67,25 @@ func (s *Service) Run(ctx context.Context) {
 }
 
 func (s *Service) readStates() ([]*state.State, error) {
-	var records []state.StateDB
-	err := s.db.Find(&records).Error
+	states, err := s.stateRepo.GetAll()
 	if err != nil {
-		log.WithError(err).Error("failed to get all db states")
+		logrus.WithError(err).Error("failed to get all states")
 		return nil, err
 	}
 
 	const day = time.Hour * 24
 	today := time.Now().UTC().Truncate(day)
 
-	var states []*state.State
-	for i := range records {
-		st, err := state.LoadState(s.db, records[i].TelegramID)
-		if err != nil {
-			log.WithField("record", records[i]).WithError(err).Error("failed to load the state")
+	var filtered []*state.State
+	for _, s := range states {
+		if s.CannotReceiveMessages || s.LastNotificationAt.After(today) {
 			continue
 		}
 
-		if st.CannotReceiveMessages || st.LastNotificationAt.After(today) {
-			continue
-		}
-
-		states = append(states, st)
+		filtered = append(filtered, s)
 	}
 
-	return states, err
+	return filtered, nil
 }
 
 func (s *Service) sendNotifications() {
@@ -106,11 +98,11 @@ func (s *Service) sendNotifications() {
 
 	states, err := s.readStates()
 	if err != nil {
-		log.WithError(err).Error("failed to read states")
+		logrus.WithError(err).Error("failed to read states")
 		return
 	}
 
-	log.Info("read states to send notifications")
+	logrus.Info("read states to send notifications")
 
 	var sentNotifications uint64
 	wg := sync.WaitGroup{}
@@ -123,9 +115,9 @@ func (s *Service) sendNotifications() {
 			lock.Lock()
 			defer lock.Unlock()
 
-			logger := log.WithField("telegram_id", userTelegramID)
+			logger := logrus.WithField("telegram_id", userTelegramID)
 
-			session, err := tg.NewSession(userTelegramID, s.general, nil)
+			session, err := tg.NewSession(s.general.VKCli, s.general.Bot, s.general.Executor, s.stateRepo, userTelegramID, nil)
 			if err != nil {
 				logger.WithError(err).Error("failed to create a new session")
 				wg.Done()
@@ -148,12 +140,12 @@ func (s *Service) sendNotifications() {
 				session.State.LastNotificationAt = time.Now()
 			}
 
-			session.SaveState()
+			s.stateRepo.Save(session.State)
 			wg.Done()
 		}(states[i].TelegramID)
 	}
 
-	log.WithField("sent_notifications", sentNotifications).Info("sent birthday reminder")
+	logrus.WithField("sent_notifications", sentNotifications).Info("sent birthday reminder")
 
 	wg.Wait()
 }

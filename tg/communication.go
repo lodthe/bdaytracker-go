@@ -6,7 +6,7 @@ import (
 
 	"github.com/petuhovskiy/telegram"
 	"github.com/petuhovskiy/telegram/markup"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 
 	"github.com/lodthe/bdaytracker-go/static"
 )
@@ -41,7 +41,7 @@ func (s *Session) sendMessage(text string, keyboard telegram.AnyKeyboard) error 
 		})
 	})
 	if err != nil {
-		log.WithFields(log.Fields{
+		logrus.WithFields(logrus.Fields{
 			"telegram_id":  s.TelegramID,
 			"message_text": text,
 		}).WithError(err).Error("failed to send the message")
@@ -67,7 +67,7 @@ func (s *Session) editInlineMessage(text string, keyboard *telegram.InlineKeyboa
 	})
 
 	if err != nil {
-		log.WithFields(log.Fields{
+		logrus.WithFields(logrus.Fields{
 			"telegram_id":    s.TelegramID,
 			"message_text":   text,
 			"callback_query": s.LastUpdate.CallbackQuery,
@@ -99,7 +99,7 @@ func (s *Session) SendText(text string, keyboard ...telegram.AnyKeyboard) error 
 
 	default:
 		err := errors.New("unknown keyboard type")
-		log.WithField("keyboard", keyboard).WithError(err).Error("failed to send a telegram message")
+		logrus.WithField("keyboard", keyboard).WithError(err).Error("failed to send a telegram message")
 		return err
 	}
 }
@@ -127,7 +127,7 @@ func (s *Session) SendInlinePhoto(text string, file string, keyboard telegram.An
 		})
 	})
 	if err != nil {
-		log.WithFields(log.Fields{
+		logrus.WithFields(logrus.Fields{
 			"telegram_id":  s.TelegramID,
 			"message_text": text,
 			"file":         file,
@@ -167,7 +167,7 @@ func (s *Session) DeleteLastMessage() error {
 		})
 	})
 	if err != nil {
-		log.WithFields(log.Fields{
+		logrus.WithFields(logrus.Fields{
 			"telegram_id": s.TelegramID,
 			"message":     msg,
 		}).WithError(err).Error("failed to delete the last message")

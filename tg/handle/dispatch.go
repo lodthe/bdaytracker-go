@@ -5,7 +5,7 @@ import (
 	"runtime/debug"
 
 	"github.com/petuhovskiy/telegram"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 
 	"github.com/lodthe/bdaytracker-go/tg"
 	"github.com/lodthe/bdaytracker-go/tg/callback"
@@ -14,7 +14,7 @@ import (
 func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.Update) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.WithFields(log.Fields{
+			logrus.WithFields(logrus.Fields{
 				"recovered":           r,
 				"session_telegram_id": sessionTelegramID,
 				"stacktrace":          string(debug.Stack()),
@@ -23,9 +23,9 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 		}
 	}()
 
-	s, err := tg.NewSession(sessionTelegramID, general, &update)
+	s, err := tg.NewSession(general.VKCli, general.Bot, general.Executor, general.StateRepo, sessionTelegramID, &update)
 	if err != nil {
-		log.WithFields(log.Fields{
+		logrus.WithFields(logrus.Fields{
 			"session_telegram_id": sessionTelegramID,
 			"update":              update,
 		}).WithError(err).Error("failed to create the session")
@@ -34,7 +34,7 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 
 	if update.CallbackQuery != nil {
 		clb := callback.Unmarshal(update.CallbackQuery.Data)
-		log.WithFields(log.Fields{
+		logrus.WithFields(logrus.Fields{
 			"telegram_id": sessionTelegramID,
 			"type_name":   reflect.TypeOf(clb).Name(),
 		}).Info("unpack a callback")
@@ -60,9 +60,9 @@ func dispatchUpdate(general *tg.General, sessionTelegramID int, update telegram.
 		&MenuHandler{},
 	)
 
-	err = s.SaveState()
+	err = general.StateRepo.Save(s.State)
 	if err != nil {
-		log.WithField("telegram_id", sessionTelegramID).WithError(err).Error("failed to save the state")
+		logrus.WithField("telegram_id", sessionTelegramID).WithError(err).Error("failed to save the state")
 	}
 }
 

@@ -1,4 +1,4 @@
-FROM golang:1.14.4-alpine AS go-builder
+FROM golang:1.16.12-alpine3.15 AS go-builder
 
 WORKDIR /usr/src/app
 
@@ -18,7 +18,7 @@ COPY . .
 RUN go build -o /app
 
 
-FROM alpine:3.10
+FROM alpine:3.15
 
 # Install packages required by the image
 RUN apk add --update \

@@ -2,13 +2,17 @@ package tg
 
 import (
 	"github.com/petuhovskiy/telegram"
-	log "github.com/sirupsen/logrus"
+	"github.com/pkg/errors"
 
 	"github.com/lodthe/bdaytracker-go/tg/state"
+	"github.com/lodthe/bdaytracker-go/tg/tglimiter"
+	"github.com/lodthe/bdaytracker-go/vk"
 )
 
 type Session struct {
-	General
+	VKCli    *vk.Client
+	Bot      *telegram.Bot
+	Executor *tglimiter.Executor
 
 	TelegramID int
 	LastUpdate *telegram.Update
@@ -16,21 +20,18 @@ type Session struct {
 	State *state.State
 }
 
-func NewSession(telegramID int, general *General, update *telegram.Update) (*Session, error) {
-	st, err := state.LoadState(general.DB, telegramID)
+func NewSession(vkCli *vk.Client, bot *telegram.Bot, executor *tglimiter.Executor, repo state.Repository, telegramID int, update *telegram.Update) (*Session, error) {
+	st, err := repo.Get(telegramID)
 	if err != nil {
-		log.WithField("telegram_id", telegramID).WithError(err).Error("failed to load the state")
-		return nil, err
+		return nil, errors.Wrap(err, "state loading failed")
 	}
 
 	return &Session{
-		General:    *general,
+		VKCli:      vkCli,
+		Bot:        bot,
+		Executor:   executor,
 		TelegramID: telegramID,
 		LastUpdate: update,
 		State:      st,
 	}, nil
-}
-
-func (s *Session) SaveState() error {
-	return s.State.Save(s.DB)
 }
