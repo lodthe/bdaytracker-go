@@ -1,8 +1,9 @@
 package tg
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/petuhovskiy/telegram"
+
+	"github.com/lodthe/bdaytracker-go/tg/state"
 
 	"github.com/lodthe/bdaytracker-go/conf"
 	"github.com/lodthe/bdaytracker-go/tg/tglimiter"
@@ -14,7 +15,7 @@ type General struct {
 	Bot      *telegram.Bot
 	Executor *tglimiter.Executor
 
-	DB     *gorm.DB
-	Config conf.Config
-	VKCli  *vk.Client
+	StateRepo *state.Repo
+	Config    conf.Config
+	VKCli     *vk.Client
 }

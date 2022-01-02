@@ -3,25 +3,32 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
-	"github.com/jinzhu/gorm"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
+
+	"github.com/lodthe/bdaytracker-go/tg/state"
+
+	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/petuhovskiy/telegram"
 	"github.com/petuhovskiy/telegram/updates"
-	log "github.com/sirupsen/logrus"
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 
-	"github.com/lodthe/bdaytracker-go/migration"
+	"github.com/golang-migrate/migrate/v4"
+
 	"github.com/lodthe/bdaytracker-go/tg/callback"
 	"github.com/lodthe/bdaytracker-go/tg/notifications"
 	"github.com/lodthe/bdaytracker-go/tg/sessionstorage"
 	"github.com/lodthe/bdaytracker-go/tg/tglimiter"
-	vk "github.com/lodthe/bdaytracker-go/vk"
+	"github.com/lodthe/bdaytracker-go/vk"
 
 	"github.com/lodthe/bdaytracker-go/conf"
 	"github.com/lodthe/bdaytracker-go/tg"
 	"github.com/lodthe/bdaytracker-go/tg/handle"
 
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/jmoiron/sqlx"
 )
 
 func main() {
@@ -30,7 +37,17 @@ func main() {
 
 	globalContext, cancel := context.WithCancel(context.Background())
 
-	db := setupGORM(config.DB)
+	db, err := setupDatabaseConnection(config.DB)
+	if err != nil {
+		logrus.WithError(err).Fatal("failed to setup db conn")
+	}
+
+	err = applyMigrations(db, config.DB)
+	if err != nil {
+		logrus.WithError(err).Fatal("failed to apply migrations")
+	}
+
+	stateRepo := state.NewRepository(db)
 
 	bot := setupBot(config.Telegram)
 	callback.Init()
@@ -40,11 +57,11 @@ func main() {
 	telegramExecutor := tglimiter.NewExecutor()
 
 	general := tg.General{
-		Bot:      bot,
-		Executor: telegramExecutor,
-		DB:       db,
-		Config:   config,
-		VKCli:    vkCli,
+		Bot:       bot,
+		Executor:  telegramExecutor,
+		StateRepo: stateRepo,
+		Config:    config,
+		VKCli:     vkCli,
 	}
 
 	// Start getting updates from Telegram
@@ -52,12 +69,12 @@ func main() {
 		Offset: 0,
 	})
 	if err != nil {
-		log.WithError(err).Fatal("failed to start the polling")
+		logrus.WithError(err).Fatal("failed to start the polling")
 	}
 
 	sessionStorage := sessionstorage.NewStorage()
 
-	go notifications.NewService(db, &general, sessionStorage).Run(globalContext)
+	go notifications.NewService(stateRepo, &general, sessionStorage).Run(globalContext)
 
 	collector := handle.NewUpdatesCollector(sessionStorage)
 	collector.Start(general, ch)
@@ -66,32 +83,47 @@ func main() {
 }
 
 func setupLogging() {
-	log.SetLevel(log.DebugLevel)
-	log.SetFormatter(&log.JSONFormatter{})
+	logrus.SetLevel(logrus.DebugLevel)
+	logrus.SetFormatter(&logrus.JSONFormatter{})
 }
 
-func setupGORM(config conf.DB) *gorm.DB {
-	db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s sslmode=%s dbname=%s user=%s password=%s", config.Host, config.Port, config.SSLMode, config.Name, config.User, config.Password))
+func setupDatabaseConnection(config conf.DB) (*sqlx.DB, error) {
+	db, err := sqlx.Open("pgx", config.PostgresDSN)
 	if err != nil {
-		log.WithError(err).Fatal("failed to open the db")
+		return nil, err
 	}
 
-	db.DB().SetMaxOpenConns(config.MaxConnections)
-	db.LogMode(config.GORMDebug)
+	db.SetConnMaxLifetime(config.MaxConnectionLifetime)
+	db.SetMaxOpenConns(config.MaxOpenConnections)
+	db.SetMaxIdleConns(config.MaxIdleConnections)
 
-	err = migration.Migrate(db)
+	return db, nil
+}
+
+func applyMigrations(db *sqlx.DB, config conf.DB) error {
+	migrationDriver, err := postgres.WithInstance(db.DB, &postgres.Config{})
 	if err != nil {
-		log.WithError(err).Fatal("failed to make migrations")
+		return errors.Wrap(err, "failed to create postgres instance")
 	}
 
-	return db
+	manager, err := migrate.NewWithDatabaseInstance("file://"+config.MigrationPath, config.DabataseName, migrationDriver)
+	if err != nil {
+		return errors.Wrap(err, "failed to create migration manager")
+	}
+
+	err = manager.Up()
+	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		return errors.Wrap(err, "failed to apply migrations")
+	}
+
+	return nil
 }
 
 func setupBot(config conf.Telegram) *telegram.Bot {
 	opts := &telegram.Opts{}
 	opts.Middleware = func(handler telegram.RequestHandler) telegram.RequestHandler {
 		return func(methodName string, request interface{}) (json.RawMessage, error) {
-			log.WithFields(log.Fields{
+			logrus.WithFields(logrus.Fields{
 				"request": request,
 				"method":  methodName,
 			}).Debug("a telegram bot request")
@@ -99,7 +131,7 @@ func setupBot(config conf.Telegram) *telegram.Bot {
 			j, err := handler(methodName, request)
 
 			if err != nil {
-				log.WithFields(log.Fields{
+				logrus.WithFields(logrus.Fields{
 					"request": request,
 					"method":  methodName,
 				}).WithError(err).Error("telegram bot request failed")

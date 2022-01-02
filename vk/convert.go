@@ -5,7 +5,7 @@ import (
 
 	"github.com/SevereCloud/vksdk/object"
 	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 
 	"github.com/lodthe/bdaytracker-go/models"
 )
@@ -20,7 +20,7 @@ func friendObjectToFriend(obj *object.FriendsUserXtrLists) models.Friend {
 	if obj.Bdate != "" {
 		_, err := fmt.Sscanf(obj.Bdate, "%d.%d", &result.BDay, &result.BMonth)
 		if err != nil {
-			log.WithField("obj", obj).WithError(err).Error("failed to parse bdate")
+			logrus.WithField("obj", obj).WithError(err).Error("failed to parse bdate")
 		}
 	}
 

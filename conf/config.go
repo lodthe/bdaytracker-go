@@ -1,8 +1,10 @@
 package conf
 
 import (
+	"time"
+
 	"github.com/caarlos0/env/v6"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 type Config struct {
@@ -20,23 +22,21 @@ type VK struct {
 }
 
 type DB struct {
-	Host     string `env:"DB_HOST"`
-	Port     string `env:"DB_PORT" envDefault:"5432"`
-	Name     string `env:"DB_NAME" envDefault:"bdaytracker"`
-	User     string `env:"DB_USER"`
-	Password string `env:"DB_PASSWORD"`
-	SSLMode  string `env:"DB_SSL_MODE" envDefault:"disable"`
+	PostgresDSN string `env:"DB_POSTGRES_DSN,required" envDefault:"host=localhost port=5435 user=user password=password dbname=bdaytracker sslmode=disable"`
 
-	MaxConnections int `env:"DB_MAX_CONNECTIONS" envDefault:"10"`
+	DabataseName  string `env:"DB_NAME,required" envDefault:"bdaytracker"`
+	MigrationPath string `env:"DB_MIGRATION_PATH" envDefault:"./migrations"`
 
-	GORMDebug bool `env:"DB_GORM_DEBUG" envDefault:"false"`
+	MaxOpenConnections    int           `env:"DB_MAX_OPEN_CONNECTIONS" envDefault:"10"`
+	MaxIdleConnections    int           `env:"DB_MAX_IDLE_CONNECTIONS" envDefault:"5"`
+	MaxConnectionLifetime time.Duration `env:"DB_MAX_CONNECTION_LIFETIME" envDefault:"5m"`
 }
 
 func Read() Config {
 	conf := Config{}
 
 	if err := env.Parse(&conf); err != nil {
-		log.WithError(err).Fatal("failed to read the config")
+		logrus.WithError(err).Fatal("failed to read the config")
 	}
 
 	return conf

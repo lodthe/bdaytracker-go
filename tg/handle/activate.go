@@ -4,7 +4,7 @@ import (
 	"reflect"
 
 	"github.com/petuhovskiy/telegram"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 
 	"github.com/lodthe/bdaytracker-go/tg"
 	"github.com/lodthe/bdaytracker-go/tg/callback"
@@ -36,7 +36,7 @@ type methodHandleCallback interface {
 // Then it handles the update with the found handler, and search stops.
 func activateHandler(s *tg.Session, update telegram.Update, handlers ...interface{}) {
 	activate := func(handler interface{}) {
-		logger := log.WithFields(log.Fields{
+		logger := logrus.WithFields(logrus.Fields{
 			"update":      update,
 			"telegram_id": s.TelegramID,
 			"handler":     handler,

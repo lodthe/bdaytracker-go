@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 type FileReader struct {
@@ -30,7 +30,7 @@ func (s *FileReader) Reader() (io.Reader, error) {
 func (s *FileReader) Size() int64 {
 	file, err := os.Stat(s.file)
 	if err != nil {
-		log.WithFields(log.Fields{
+		logrus.WithFields(logrus.Fields{
 			"file": s.file,
 		}).WithError(err).Error("failed to get the file size")
 		return 0

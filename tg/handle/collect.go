@@ -2,7 +2,7 @@ package handle
 
 import (
 	"github.com/petuhovskiy/telegram"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 
 	"github.com/lodthe/bdaytracker-go/tg"
 	"github.com/lodthe/bdaytracker-go/tg/sessionstorage"
@@ -20,7 +20,7 @@ func NewUpdatesCollector(storage *sessionstorage.Storage) *UpdatesCollector {
 
 func (c *UpdatesCollector) Start(general tg.General, updates <-chan telegram.Update) {
 	for upd := range updates {
-		log.WithField("update", upd).Debug("received a new update")
+		logrus.WithField("update", upd).Debug("received a new update")
 
 		var userTelegramID int
 		switch {

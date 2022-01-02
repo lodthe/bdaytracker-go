@@ -3,7 +3,7 @@ package callback
 import (
 	"testing"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -55,7 +55,7 @@ func TestSerialization(t *testing.T) {
 	}
 
 	encoded := Marshal(sample)
-	log.WithField("encoded", encoded).Info("an encoded callback")
+	logrus.WithField("encoded", encoded).Info("an encoded callback")
 
 	value, ok := Unmarshal(encoded).(FooTest)
 	assert.True(t, ok)
