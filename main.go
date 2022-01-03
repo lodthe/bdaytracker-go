@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	conf2 "github.com/lodthe/bdaytracker-go/internal/conf"
+	vk2 "github.com/lodthe/bdaytracker-go/internal/vk"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 
-	"github.com/lodthe/bdaytracker-go/tg/state"
+	"github.com/lodthe/bdaytracker-go/internal/tgstate"
 
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/petuhovskiy/telegram"
@@ -18,22 +20,18 @@ import (
 
 	"github.com/golang-migrate/migrate/v4"
 
-	"github.com/lodthe/bdaytracker-go/tg/callback"
-	"github.com/lodthe/bdaytracker-go/tg/notifications"
-	"github.com/lodthe/bdaytracker-go/tg/sessionstorage"
-	"github.com/lodthe/bdaytracker-go/tg/tglimiter"
-	"github.com/lodthe/bdaytracker-go/vk"
-
-	"github.com/lodthe/bdaytracker-go/conf"
-	"github.com/lodthe/bdaytracker-go/tg"
-	"github.com/lodthe/bdaytracker-go/tg/handle"
+	"github.com/lodthe/bdaytracker-go/internal/reminder"
+	"github.com/lodthe/bdaytracker-go/internal/tgcallback"
+	"github.com/lodthe/bdaytracker-go/internal/tghandle"
+	"github.com/lodthe/bdaytracker-go/internal/tglimiter"
+	"github.com/lodthe/bdaytracker-go/internal/usersession"
 
 	"github.com/jmoiron/sqlx"
 )
 
 func main() {
 	setupLogging()
-	config := conf.Read()
+	config := conf2.Read()
 
 	globalContext, cancel := context.WithCancel(context.Background())
 
@@ -47,16 +45,16 @@ func main() {
 		logrus.WithError(err).Fatal("failed to apply migrations")
 	}
 
-	stateRepo := state.NewRepository(db)
+	stateRepo := tgstate.NewRepository(db)
 
 	bot := setupBot(config.Telegram)
-	callback.Init()
+	tgcallback.Init()
 
-	vkCli := vk.NewClient(config.VK.Token)
+	vkCli := vk2.NewClient(config.VK.Token)
 
 	telegramExecutor := tglimiter.NewExecutor()
 
-	general := tg.General{
+	general := usersession.General{
 		Bot:       bot,
 		Executor:  telegramExecutor,
 		StateRepo: stateRepo,
@@ -72,11 +70,11 @@ func main() {
 		logrus.WithError(err).Fatal("failed to start the polling")
 	}
 
-	sessionStorage := sessionstorage.NewStorage()
+	sessionStorage := usersession.NewStorage()
 
-	go notifications.NewService(stateRepo, &general, sessionStorage).Run(globalContext)
+	go reminder.NewService(stateRepo, &general, sessionStorage).Run(globalContext)
 
-	collector := handle.NewUpdatesCollector(sessionStorage)
+	collector := tghandle.NewUpdatesCollector(sessionStorage)
 	collector.Start(general, ch)
 
 	cancel()
@@ -87,7 +85,7 @@ func setupLogging() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 }
 
-func setupDatabaseConnection(config conf.DB) (*sqlx.DB, error) {
+func setupDatabaseConnection(config conf2.DB) (*sqlx.DB, error) {
 	db, err := sqlx.Open("pgx", config.PostgresDSN)
 	if err != nil {
 		return nil, err
@@ -100,7 +98,7 @@ func setupDatabaseConnection(config conf.DB) (*sqlx.DB, error) {
 	return db, nil
 }
 
-func applyMigrations(db *sqlx.DB, config conf.DB) error {
+func applyMigrations(db *sqlx.DB, config conf2.DB) error {
 	migrationDriver, err := postgres.WithInstance(db.DB, &postgres.Config{})
 	if err != nil {
 		return errors.Wrap(err, "failed to create postgres instance")
@@ -119,7 +117,7 @@ func applyMigrations(db *sqlx.DB, config conf.DB) error {
 	return nil
 }
 
-func setupBot(config conf.Telegram) *telegram.Bot {
+func setupBot(config conf2.Telegram) *telegram.Bot {
 	opts := &telegram.Opts{}
 	opts.Middleware = func(handler telegram.RequestHandler) telegram.RequestHandler {
 		return func(methodName string, request interface{}) (json.RawMessage, error) {
