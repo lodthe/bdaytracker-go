@@ -111,5 +111,5 @@ func (h *RemoveFriendCancelHandler) Callback() interface{} {
 }
 
 func (h *RemoveFriendCancelHandler) HandleCallback(s *tg.Session, clb interface{}) {
-	tgview.RemoveFriend{}.Cancelled(s, clb.(callback.RemoveFriendCancel))
+	tgview.RemoveFriend{}.Canceled(s, clb.(callback.RemoveFriendCancel))
 }

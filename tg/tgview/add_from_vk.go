@@ -23,7 +23,7 @@ func (f AddFromVK) ProfileIsHidden(s *tg.Session) {
 	s.SendText("Чтобы добавить друзей из ВКонтакте, профиль должен быть открытым. После успешного добавления информации о друзьях ты можешь закрыть профиль.", cancelKeyboard())
 }
 
-func (f AddFromVK) Cancelled(s *tg.Session) {
+func (f AddFromVK) Canceled(s *tg.Session) {
 	s.SendText("Добавление друзей из ВКонтакте отменено.", menuKeyboard())
 }
 

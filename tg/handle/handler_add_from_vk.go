@@ -32,7 +32,7 @@ func (h *AddFromVKHandler) HandleCallback(s *tg.Session, clb interface{}) {
 func (h *AddFromVKHandler) HandleMessage(s *tg.Session, msgText string) {
 	switch msgText {
 	case btn.Cancel:
-		tgview.AddFromVK{}.Cancelled(s)
+		tgview.AddFromVK{}.Canceled(s)
 		s.State.State = state.None
 
 	default:

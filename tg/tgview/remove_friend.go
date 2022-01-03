@@ -47,7 +47,7 @@ func (f RemoveFriend) Approved(s *tg.Session, clb callback.RemoveFriendApprove) 
 	_ = s.SendText(text, menuKeyboard())
 }
 
-func (f RemoveFriend) Cancelled(s *tg.Session, clb callback.RemoveFriendCancel) {
+func (f RemoveFriend) Canceled(s *tg.Session, clb callback.RemoveFriendCancel) {
 	text := fmt.Sprintf("<b>%s</b> остается в списке друзей!", clb.Name)
 	_ = s.DeleteLastMessage()
 	_ = s.SendText(text, menuKeyboard())
