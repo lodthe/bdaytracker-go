@@ -4,19 +4,19 @@ import (
 	"sync"
 )
 
-type Storage struct {
+type storage struct {
 	sessionLockers map[int]sync.Locker
 	lock           sync.Locker
 }
 
-func NewStorage() *Storage {
-	return &Storage{
+func newStorage() *storage {
+	return &storage{
 		sessionLockers: map[int]sync.Locker{},
 		lock:           &sync.Mutex{},
 	}
 }
 
-func (s *Storage) AcquireLock(telegramID int) sync.Locker {
+func (s *storage) acquireLock(telegramID int) sync.Locker {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 

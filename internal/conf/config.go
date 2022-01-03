@@ -13,6 +13,7 @@ type Config struct {
 	Telegram Telegram
 	VK       VK
 	DB       DB
+	Mailing  Mailing
 }
 
 type Telegram struct {
@@ -32,6 +33,12 @@ type DB struct {
 	MaxOpenConnections    int           `env:"DB_MAX_OPEN_CONNECTIONS" envDefault:"10"`
 	MaxIdleConnections    int           `env:"DB_MAX_IDLE_CONNECTIONS" envDefault:"5"`
 	MaxConnectionLifetime time.Duration `env:"DB_MAX_CONNECTION_LIFETIME" envDefault:"5m"`
+}
+
+type Mailing struct {
+	StartHour             int  `env:"MAILING_START_HOUR" envDefault:"7"`
+	EndHour               int  `env:"MAILING_END_HOUR" envDefault:"7"`
+	MaxRemindersPerSecond uint `env:"MAILING_MAX_REMINDERS_PER_SECOND" envDefault:"15"`
 }
 
 func Read() Config {

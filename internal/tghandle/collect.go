@@ -8,14 +8,12 @@ import (
 )
 
 type UpdatesCollector struct {
-	issuer         *usersession.Issuer
-	sessionStorage *usersession.Storage
+	issuer *usersession.Issuer
 }
 
-func NewUpdatesCollector(issuer *usersession.Issuer, storage *usersession.Storage) *UpdatesCollector {
+func NewUpdatesCollector(issuer *usersession.Issuer) *UpdatesCollector {
 	return &UpdatesCollector{
-		issuer:         issuer,
-		sessionStorage: storage,
+		issuer: issuer,
 	}
 }
 
@@ -35,11 +33,7 @@ func (c *UpdatesCollector) Start(updates <-chan telegram.Update) {
 
 		// For one session no more than 1 dispatcher can be in process at one moment
 		go func(telegramID int, update telegram.Update) {
-			sessionLocker := c.sessionStorage.AcquireLock(telegramID)
-			sessionLocker.Lock()
-			defer sessionLocker.Unlock()
-
-			s, err := c.issuer.Issue(telegramID, &update)
+			s, release, err := c.issuer.Issue(telegramID, &update)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"telegram_id": telegramID,
@@ -48,6 +42,7 @@ func (c *UpdatesCollector) Start(updates <-chan telegram.Update) {
 
 				return
 			}
+			defer release()
 
 			dispatchUpdate(s, update)
 		}(userTelegramID, upd)

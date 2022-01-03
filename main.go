@@ -20,7 +20,7 @@ import (
 
 	"github.com/golang-migrate/migrate/v4"
 
-	"github.com/lodthe/bdaytracker-go/internal/reminder"
+	"github.com/lodthe/bdaytracker-go/internal/mailing"
 	"github.com/lodthe/bdaytracker-go/internal/tgcallback"
 	"github.com/lodthe/bdaytracker-go/internal/tghandle"
 	"github.com/lodthe/bdaytracker-go/internal/tglimiter"
@@ -64,11 +64,9 @@ func main() {
 		logrus.WithError(err).Fatal("failed to start the polling")
 	}
 
-	sessionStorage := usersession.NewStorage()
+	go mailing.NewService(&config.Mailing, stateRepo, sessionIssuer).Run(globalContext)
 
-	go reminder.NewService(stateRepo, sessionIssuer, sessionStorage).Run(globalContext)
-
-	collector := tghandle.NewUpdatesCollector(sessionIssuer, sessionStorage)
+	collector := tghandle.NewUpdatesCollector(sessionIssuer)
 	collector.Start(ch)
 
 	cancel()

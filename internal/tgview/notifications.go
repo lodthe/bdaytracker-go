@@ -6,10 +6,10 @@ import (
 	"github.com/lodthe/bdaytracker-go/internal/usersession"
 )
 
-type Notifications struct {
+type Reminders struct {
 }
 
-func (n Notifications) WishYourFriendsHappyBirthday(s *usersession.Session) (birthdaysNumber int, err error) {
+func (n Reminders) WishYourFriendsHappyBirthday(s *usersession.Session) (birthdaysNumber int, err error) {
 	text := "Сегодня День Рождения у твоих друзей!\n\n"
 
 	_, month, day := time.Now().Date()
