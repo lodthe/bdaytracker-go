@@ -1,12 +1,13 @@
 package usersession
 
 import (
+	"github.com/petuhovskiy/telegram"
+	"github.com/pkg/errors"
+
 	"github.com/lodthe/bdaytracker-go/internal/conf"
 	"github.com/lodthe/bdaytracker-go/internal/tglimiter"
 	"github.com/lodthe/bdaytracker-go/internal/tgstate"
 	"github.com/lodthe/bdaytracker-go/internal/vk"
-	"github.com/petuhovskiy/telegram"
-	"github.com/pkg/errors"
 )
 
 type Issuer struct {

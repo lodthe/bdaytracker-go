@@ -3,9 +3,10 @@ package tghandle
 import (
 	"reflect"
 
-	"github.com/lodthe/bdaytracker-go/internal/usersession"
 	"github.com/petuhovskiy/telegram"
 	"github.com/sirupsen/logrus"
+
+	"github.com/lodthe/bdaytracker-go/internal/usersession"
 
 	"github.com/lodthe/bdaytracker-go/internal/tgcallback"
 	"github.com/lodthe/bdaytracker-go/internal/tgstate"
@@ -71,7 +72,9 @@ func activateHandler(s *usersession.Session, update telegram.Update, handlers ..
 		if !ok || handler.State() != s.State.StateBefore {
 			continue
 		}
+
 		activate(handlers[i])
+
 		return
 	}
 
@@ -93,6 +96,7 @@ func activateHandler(s *usersession.Session, update telegram.Update, handlers ..
 		}
 
 		activate(handlers[i])
+
 		return
 	}
 }

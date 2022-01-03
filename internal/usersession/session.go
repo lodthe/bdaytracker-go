@@ -1,11 +1,12 @@
 package usersession
 
 import (
+	"github.com/petuhovskiy/telegram"
+
 	"github.com/lodthe/bdaytracker-go/internal/conf"
 	"github.com/lodthe/bdaytracker-go/internal/tglimiter"
 	"github.com/lodthe/bdaytracker-go/internal/tgstate"
 	"github.com/lodthe/bdaytracker-go/internal/vk"
-	"github.com/petuhovskiy/telegram"
 )
 
 type controllers struct {

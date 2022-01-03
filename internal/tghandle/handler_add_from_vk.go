@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	apiErrors "github.com/SevereCloud/vksdk/api/errors"
+
 	"github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/lodthe/bdaytracker-go/internal/usersession"
 

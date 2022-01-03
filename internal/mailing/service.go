@@ -8,9 +8,10 @@ import (
 
 	limiter "github.com/chatex-com/rate-limiter"
 	"github.com/chatex-com/rate-limiter/pkg/config"
-	"github.com/lodthe/bdaytracker-go/internal/conf"
 	"github.com/petuhovskiy/telegram"
 	"github.com/sirupsen/logrus"
+
+	"github.com/lodthe/bdaytracker-go/internal/conf"
 
 	"github.com/lodthe/bdaytracker-go/internal/tgstate"
 	"github.com/lodthe/bdaytracker-go/internal/tgview"

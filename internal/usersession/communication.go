@@ -4,10 +4,11 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/lodthe/bdaytracker-go/internal/filereader"
 	"github.com/petuhovskiy/telegram"
 	"github.com/petuhovskiy/telegram/markup"
 	"github.com/sirupsen/logrus"
+
+	"github.com/lodthe/bdaytracker-go/internal/filereader"
 )
 
 const parseMode = "HTML"
@@ -31,6 +32,7 @@ func (s *Session) sendMessage(text string, keyboard telegram.AnyKeyboard) error 
 	if s.State.CannotReceiveMessages {
 		return nil
 	}
+
 	_, err := s.ctrl.tgExecutor.Execute(func() (interface{}, error) {
 		return s.ctrl.tgBot.SendMessage(&telegram.SendMessageRequest{
 			ChatID:                strconv.Itoa(s.TelegramID),
@@ -40,13 +42,16 @@ func (s *Session) sendMessage(text string, keyboard telegram.AnyKeyboard) error 
 			ReplyMarkup:           keyboard,
 		})
 	})
+
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"telegram_id":  s.TelegramID,
 			"message_text": text,
 		}).WithError(err).Error("failed to send the message")
 	}
+
 	s.onTelegramError(err)
+
 	return err
 }
 
@@ -73,7 +78,9 @@ func (s *Session) editInlineMessage(text string, keyboard *telegram.InlineKeyboa
 			"callback_query": s.LastUpdate.CallbackQuery,
 		}).WithError(err).Error("failed to edit the message")
 	}
+
 	s.onTelegramError(err)
+
 	return err
 }
 
@@ -110,6 +117,7 @@ func (s *Session) SendEditText(text string, keyboard [][]telegram.InlineKeyboard
 	if !edit || s.LastUpdate.CallbackQuery == nil {
 		return s.SendText(text, keyboard)
 	}
+
 	return s.editInlineMessage(text, markup.InlineKeyboardMarkup(keyboard))
 }
 
@@ -117,6 +125,7 @@ func (s *Session) SendInlinePhoto(text string, file string, keyboard telegram.An
 	if s.State.CannotReceiveMessages {
 		return nil
 	}
+
 	_, err := s.ctrl.tgExecutor.Execute(func() (interface{}, error) {
 		return s.ctrl.tgBot.SendPhoto(&telegram.SendPhotoRequest{
 			ChatID:      strconv.Itoa(s.TelegramID),
@@ -126,6 +135,7 @@ func (s *Session) SendInlinePhoto(text string, file string, keyboard telegram.An
 			ReplyMarkup: keyboard,
 		})
 	})
+
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"telegram_id":  s.TelegramID,
@@ -133,7 +143,9 @@ func (s *Session) SendInlinePhoto(text string, file string, keyboard telegram.An
 			"file":         file,
 		}).WithError(err).Error("failed to send the message")
 	}
+
 	s.onTelegramError(err)
+
 	return err
 }
 

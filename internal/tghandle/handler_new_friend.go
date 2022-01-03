@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+
 	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/lodthe/bdaytracker-go/internal/usersession"
 

@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"time"
 
-	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/pkg/errors"
+
+	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 )
 
 type State struct {

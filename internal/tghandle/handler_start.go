@@ -4,8 +4,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lodthe/bdaytracker-go/internal/usersession"
 	"github.com/petuhovskiy/telegram"
+
+	"github.com/lodthe/bdaytracker-go/internal/usersession"
 
 	"github.com/lodthe/bdaytracker-go/internal/tgview"
 )

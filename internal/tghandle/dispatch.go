@@ -4,9 +4,10 @@ import (
 	"reflect"
 	"runtime/debug"
 
-	"github.com/lodthe/bdaytracker-go/internal/usersession"
 	"github.com/petuhovskiy/telegram"
 	"github.com/sirupsen/logrus"
+
+	"github.com/lodthe/bdaytracker-go/internal/usersession"
 
 	"github.com/lodthe/bdaytracker-go/internal/tgcallback"
 )

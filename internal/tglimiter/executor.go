@@ -7,7 +7,7 @@ import (
 	"github.com/chatex-com/rate-limiter/pkg/config"
 )
 
-const maxRequestsInSecond = 25
+const maxRPS = 25
 
 type Executor struct {
 	rateLimiter *limiter.RateLimiter
@@ -15,7 +15,7 @@ type Executor struct {
 
 func newRateLimiter() *limiter.RateLimiter {
 	cfg := config.NewConfigWithQuotas([]*config.Quota{
-		config.NewQuota(maxRequestsInSecond, time.Second),
+		config.NewQuota(maxRPS, time.Second),
 	})
 	cfg.Concurrency = 1
 
@@ -31,6 +31,7 @@ func NewExecutor() *Executor {
 	}
 }
 
+// Execute runs the given function with rate at most maxRPS.
 func (e *Executor) Execute(f func() (interface{}, error)) (interface{}, error) {
 	response := <-e.rateLimiter.Execute(func() (interface{}, error) {
 		return f()

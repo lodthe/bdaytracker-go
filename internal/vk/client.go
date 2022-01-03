@@ -7,8 +7,9 @@ import (
 	"github.com/SevereCloud/vksdk/api/params"
 	limiter "github.com/chatex-com/rate-limiter"
 	"github.com/chatex-com/rate-limiter/pkg/config"
-	"github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/sirupsen/logrus"
+
+	"github.com/lodthe/bdaytracker-go/internal/friendship"
 )
 
 const maxRequestsInSecond = 2
@@ -63,9 +64,10 @@ func (c *Client) GetFriends(id int) ([]friendship.Friend, error) {
 		return nil, response.Error
 	}
 
-	logger.Info("successfully got VK friends")
-
 	resp := response.Result.(api.FriendsGetFieldsResponse)
+
+	logger.WithField("count", len(resp.Items)).Debug("fetched VK friends")
+
 	friends := make([]friendship.Friend, len(resp.Items))
 	for i := range resp.Items {
 		friends[i] = friendObjectToFriend(&resp.Items[i])

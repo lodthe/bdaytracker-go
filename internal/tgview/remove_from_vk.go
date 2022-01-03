@@ -1,8 +1,9 @@
 package tgview
 
 import (
-	"github.com/lodthe/bdaytracker-go/internal/usersession"
 	"github.com/petuhovskiy/telegram"
+
+	"github.com/lodthe/bdaytracker-go/internal/usersession"
 
 	"github.com/lodthe/bdaytracker-go/internal/tgcallback"
 	"github.com/lodthe/bdaytracker-go/internal/tgview/btn"

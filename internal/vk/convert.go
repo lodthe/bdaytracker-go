@@ -5,8 +5,9 @@ import (
 
 	"github.com/SevereCloud/vksdk/object"
 	"github.com/google/uuid"
-	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/sirupsen/logrus"
+
+	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 )
 
 func friendObjectToFriend(obj *object.FriendsUserXtrLists) friendship.Friend {

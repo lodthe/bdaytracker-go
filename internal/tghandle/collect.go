@@ -7,11 +7,15 @@ import (
 	"github.com/lodthe/bdaytracker-go/internal/usersession"
 )
 
-type UpdatesCollector struct {
-	issuer *usersession.Issuer
+type SessionIssuer interface {
+	Issue(telegramID int, update *telegram.Update) (s *usersession.Session, release func(), err error)
 }
 
-func NewUpdatesCollector(issuer *usersession.Issuer) *UpdatesCollector {
+type UpdatesCollector struct {
+	issuer SessionIssuer
+}
+
+func NewUpdatesCollector(issuer SessionIssuer) *UpdatesCollector {
 	return &UpdatesCollector{
 		issuer: issuer,
 	}
