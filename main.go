@@ -6,6 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/jackc/pgx/v4/stdlib"
+
 	"github.com/sirupsen/logrus"
 
 	"github.com/lodthe/bdaytracker-go/internal/application"
