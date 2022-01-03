@@ -4,7 +4,7 @@ linters-settings:
     settings:
       printf:
         funcs: # TODO:
-          # - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
+        # - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
   golint:
     min-confidence: 0
   gocyclo:
@@ -17,11 +17,8 @@ linters-settings:
     locale: US
   lll:
     line-length: 140
-  gocognit:
-    # minimal code complexity to report, 30 by default (but we recommend 10-20)
-    min-complexity: 40
   goimports:
-    local-prefixes: github.com/lodthe/bdaytracker-go
+    local-prefixes: github.com/lodthe/aws-ec2-telegram-bot
   gocritic: # TODO:
     enabled-tags:
       - diagnostic
@@ -31,10 +28,13 @@ linters-settings:
       - style
     disabled-checks:
       - dupImport # https://github.com/go-critic/go-critic/issues/845
+      - ifElseChain # TODO
       - octalLiteral # TODO
+      - whyNoLint # TODO
       - wrapperFunc # TODO
       - paramTypeCombine
       - hugeParam
+      - rangeValCopy
   gomnd:
     settings:
       mnd:
@@ -73,44 +73,34 @@ linters:
     - gofmt
     - goimports
     - golint
-    - gomnd
     - gosec
     - nakedret
-    - scopelint
+    - exportloopref
     - unconvert
     - unparam
     - whitespace
+    - dupl
+    - misspell
 
-  # disable:
-    # - stylecheck
-    # - prealloc
-    # - errcheck
-    # - funlen
-    # - gochecknoglobals
-    # - gocyclo
-    # - interfacer
-    # - lll
-    # - maligned
-
-  # don't enable:
-  # - gochecknoglobals
-  # - gocognit
-  # - godox
-  # - maligned
-  # - prealloc
-
+run:
+  skip-dirs:
+    - .infra
 issues:
   exclude-rules:
     - linters:
         - gomnd
-      text: "Magic number: 1"
+      text: "Magic number: 1,"
     - path: _test\.go
       linters:
         - gomnd
+        - gocritic
+        - golint
+        - gosec
+        - unparam
 
 # golangci.com configuration
 # https://github.com/golangci/golangci/wiki/Configuration
 service:
-  golangci-lint-version: 1.28.x # use the fixed version to not introduce new linters unexpectedly
+  golangci-lint-version: 1.37.x # use the fixed version to not introduce new linters unexpectedly
   prepare:
     - echo "here I can run custom commands, but no preparation needed for this repo"
