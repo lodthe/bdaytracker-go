@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
-	friendship2 "github.com/lodthe/bdaytracker-go/internal/friendship"
+	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/pkg/errors"
 )
 
@@ -25,9 +25,9 @@ type State struct {
 
 	VKID int
 
-	Friends []friendship2.Friend
+	Friends []friendship.Friend
 
-	NewFriend friendship2.Friend
+	NewFriend friendship.Friend
 }
 
 func (s *State) Value() (driver.Value, error) {

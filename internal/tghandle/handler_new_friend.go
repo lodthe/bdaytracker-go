@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	friendship2 "github.com/lodthe/bdaytracker-go/internal/friendship"
+	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/lodthe/bdaytracker-go/internal/usersession"
 
 	"github.com/lodthe/bdaytracker-go/internal/tgcallback"
@@ -27,7 +27,7 @@ func (h *AddFriendHandler) Callback() interface{} {
 
 func (h *AddFriendHandler) HandleCallback(s *usersession.Session, clb interface{}) {
 	s.State.State = tgstate.AddFriend
-	s.State.NewFriend = friendship2.Friend{}
+	s.State.NewFriend = friendship.Friend{}
 	tgview.AddFriend{}.AskName(s)
 }
 
@@ -96,7 +96,7 @@ func (h *AddFriendHandler) handleDate(s *usersession.Session, msgText string) {
 	friend.UUID = uuid.New().String()
 	s.State.Friends = append(s.State.Friends, friend)
 	s.State.State = tgstate.None
-	s.State.NewFriend = friendship2.Friend{}
+	s.State.NewFriend = friendship.Friend{}
 
 	tgview.AddFriend{}.Success(s, friend)
 }

@@ -3,19 +3,20 @@ package filereader
 import (
 	"io"
 	"os"
+	"path"
 
 	"github.com/sirupsen/logrus"
 )
 
 type FileReader struct {
-	file string
-	name string
+	filepath string
+	name     string
 }
 
-func NewFileReader(fileName string) *FileReader {
+func NewFileReader(assetsPath, fileName string) *FileReader {
 	return &FileReader{
-		file: "./assets/" + fileName,
-		name: fileName,
+		filepath: path.Join(assetsPath, fileName) + fileName,
+		name:     fileName,
 	}
 }
 
@@ -24,15 +25,13 @@ func (s *FileReader) Name() string {
 }
 
 func (s *FileReader) Reader() (io.Reader, error) {
-	return os.Open(s.file)
+	return os.Open(s.filepath)
 }
 
 func (s *FileReader) Size() int64 {
-	file, err := os.Stat(s.file)
+	file, err := os.Stat(s.filepath)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"file": s.file,
-		}).WithError(err).Error("failed to get the file size")
+		logrus.WithField("filepath", s.filepath).WithError(err).Error("failed to get the file size")
 		return 0
 	}
 

@@ -11,33 +11,25 @@ import (
 	"github.com/lodthe/bdaytracker-go/internal/tgcallback"
 )
 
-func dispatchUpdate(general *usersession.General, sessionTelegramID int, update telegram.Update) {
+func dispatchUpdate(s *usersession.Session, update telegram.Update) {
 	defer func() {
 		if r := recover(); r != nil {
 			logrus.WithFields(logrus.Fields{
-				"recovered":           r,
-				"session_telegram_id": sessionTelegramID,
-				"stacktrace":          string(debug.Stack()),
-				"update":              update,
+				"recovered":   r,
+				"telegram_id": s.TelegramID,
+				"stacktrace":  string(debug.Stack()),
+				"update":      update,
 			}).Error("recovered from panic")
 		}
 	}()
 
-	s, err := usersession.NewSession(general.VKCli, general.Bot, general.Executor, general.StateRepo, sessionTelegramID, &update)
-	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"session_telegram_id": sessionTelegramID,
-			"update":              update,
-		}).WithError(err).Error("failed to create the session")
-		return
-	}
-
 	if update.CallbackQuery != nil {
 		clb := tgcallback.Unmarshal(update.CallbackQuery.Data)
+
 		logrus.WithFields(logrus.Fields{
-			"telegram_id": sessionTelegramID,
+			"telegram_id": s.TelegramID,
 			"type_name":   reflect.TypeOf(clb).Name(),
-		}).Info("unpack a callback")
+		}).Info("callback unpacked")
 	}
 
 	s.State.StateBefore = s.State.State
@@ -60,9 +52,9 @@ func dispatchUpdate(general *usersession.General, sessionTelegramID int, update 
 		&MenuHandler{},
 	)
 
-	err = general.StateRepo.Save(s.State)
+	err := s.SaveState()
 	if err != nil {
-		logrus.WithField("telegram_id", sessionTelegramID).WithError(err).Error("failed to save the state")
+		logrus.WithField("telegram_id", s.TelegramID).WithError(err).Error("failed to save the state")
 	}
 }
 

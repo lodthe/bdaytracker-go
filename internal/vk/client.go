@@ -7,7 +7,7 @@ import (
 	"github.com/SevereCloud/vksdk/api/params"
 	limiter "github.com/chatex-com/rate-limiter"
 	"github.com/chatex-com/rate-limiter/pkg/config"
-	friendship2 "github.com/lodthe/bdaytracker-go/internal/friendship"
+	"github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/sirupsen/logrus"
 )
 
@@ -38,7 +38,7 @@ func NewClient(token string) *Client {
 	}
 }
 
-func (c *Client) GetFriends(id int) ([]friendship2.Friend, error) {
+func (c *Client) GetFriends(id int) ([]friendship.Friend, error) {
 	const langRU = 0
 
 	logger := logrus.WithField("user_id", id)
@@ -66,7 +66,7 @@ func (c *Client) GetFriends(id int) ([]friendship2.Friend, error) {
 	logger.Info("successfully got VK friends")
 
 	resp := response.Result.(api.FriendsGetFieldsResponse)
-	friends := make([]friendship2.Friend, len(resp.Items))
+	friends := make([]friendship.Friend, len(resp.Items))
 	for i := range resp.Items {
 		friends[i] = friendObjectToFriend(&resp.Items[i])
 	}

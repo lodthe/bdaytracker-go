@@ -8,16 +8,18 @@ import (
 )
 
 type UpdatesCollector struct {
+	issuer         *usersession.Issuer
 	sessionStorage *usersession.Storage
 }
 
-func NewUpdatesCollector(storage *usersession.Storage) *UpdatesCollector {
+func NewUpdatesCollector(issuer *usersession.Issuer, storage *usersession.Storage) *UpdatesCollector {
 	return &UpdatesCollector{
+		issuer:         issuer,
 		sessionStorage: storage,
 	}
 }
 
-func (c *UpdatesCollector) Start(general usersession.General, updates <-chan telegram.Update) {
+func (c *UpdatesCollector) Start(updates <-chan telegram.Update) {
 	for upd := range updates {
 		logrus.WithField("update", upd).Debug("received a new update")
 
@@ -36,7 +38,18 @@ func (c *UpdatesCollector) Start(general usersession.General, updates <-chan tel
 			sessionLocker := c.sessionStorage.AcquireLock(telegramID)
 			sessionLocker.Lock()
 			defer sessionLocker.Unlock()
-			dispatchUpdate(&general, telegramID, update)
+
+			s, err := c.issuer.Issue(telegramID, &update)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"telegram_id": telegramID,
+					"update":      update,
+				}).WithError(err).Error("failed to issue a session")
+
+				return
+			}
+
+			dispatchUpdate(s, update)
 		}(userTelegramID, upd)
 	}
 }

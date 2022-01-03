@@ -8,6 +8,8 @@ import (
 )
 
 type Config struct {
+	AssetsPath string `env:"ASSETS_PATH" envDefault:"./assets"`
+
 	Telegram Telegram
 	VK       VK
 	DB       DB

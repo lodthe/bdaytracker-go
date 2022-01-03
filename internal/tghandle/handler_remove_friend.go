@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	friendship2 "github.com/lodthe/bdaytracker-go/internal/friendship"
+	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/lodthe/bdaytracker-go/internal/tgcallback"
 	"github.com/lodthe/bdaytracker-go/internal/tgstate"
 	"github.com/lodthe/bdaytracker-go/internal/tgview"
@@ -39,28 +39,28 @@ func (h *RemoveFriendHandler) HandleMessage(s *usersession.Session, msgText stri
 	}
 }
 
-func (h *RemoveFriendHandler) findByIndex(s *usersession.Session, index int, friends []friendship2.Friend) (friend friendship2.Friend, found bool) {
+func (h *RemoveFriendHandler) findByIndex(s *usersession.Session, index int, friends []friendship.Friend) (friend friendship.Friend, found bool) {
 	if index < 1 || index > len(friends) {
 		tgview.RemoveFriend{}.WrongIndex(s)
-		return friendship2.Friend{}, false
+		return friendship.Friend{}, false
 	}
 	return friends[index-1], true
 }
 
-func (h *RemoveFriendHandler) findByName(s *usersession.Session, name string, friends []friendship2.Friend) (friend friendship2.Friend, found bool) {
+func (h *RemoveFriendHandler) findByName(s *usersession.Session, name string, friends []friendship.Friend) (friend friendship.Friend, found bool) {
 	for i := range friends {
 		if strings.EqualFold(friends[i].Name, name) {
 			return friends[i], true
 		}
 	}
 	tgview.RemoveFriend{}.WrongName(s)
-	return friendship2.Friend{}, false
+	return friendship.Friend{}, false
 }
 
 func (h *RemoveFriendHandler) handleIndexOrName(s *usersession.Session, msgText string) {
-	sorted := friendship2.SortFriends(s.State.Friends)
+	sorted := friendship.SortFriends(s.State.Friends)
 
-	var friend friendship2.Friend
+	var friend friendship.Friend
 	var found bool
 
 	index, err := strconv.Atoi(msgText)

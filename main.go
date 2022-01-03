@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	conf2 "github.com/lodthe/bdaytracker-go/internal/conf"
-	vk2 "github.com/lodthe/bdaytracker-go/internal/vk"
+	"github.com/lodthe/bdaytracker-go/internal/conf"
+	"github.com/lodthe/bdaytracker-go/internal/vk"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 
@@ -31,7 +31,7 @@ import (
 
 func main() {
 	setupLogging()
-	config := conf2.Read()
+	config := conf.Read()
 
 	globalContext, cancel := context.WithCancel(context.Background())
 
@@ -50,17 +50,11 @@ func main() {
 	bot := setupBot(config.Telegram)
 	tgcallback.Init()
 
-	vkCli := vk2.NewClient(config.VK.Token)
+	vkCli := vk.NewClient(config.VK.Token)
 
 	telegramExecutor := tglimiter.NewExecutor()
 
-	general := usersession.General{
-		Bot:       bot,
-		Executor:  telegramExecutor,
-		StateRepo: stateRepo,
-		Config:    config,
-		VKCli:     vkCli,
-	}
+	sessionIssuer := usersession.NewIssuer(&config, bot, telegramExecutor, vkCli, stateRepo)
 
 	// Start getting updates from Telegram
 	ch, err := updates.StartPolling(bot, telegram.GetUpdatesRequest{
@@ -72,10 +66,10 @@ func main() {
 
 	sessionStorage := usersession.NewStorage()
 
-	go reminder.NewService(stateRepo, &general, sessionStorage).Run(globalContext)
+	go reminder.NewService(stateRepo, sessionIssuer, sessionStorage).Run(globalContext)
 
-	collector := tghandle.NewUpdatesCollector(sessionStorage)
-	collector.Start(general, ch)
+	collector := tghandle.NewUpdatesCollector(sessionIssuer, sessionStorage)
+	collector.Start(ch)
 
 	cancel()
 }
@@ -85,7 +79,7 @@ func setupLogging() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 }
 
-func setupDatabaseConnection(config conf2.DB) (*sqlx.DB, error) {
+func setupDatabaseConnection(config conf.DB) (*sqlx.DB, error) {
 	db, err := sqlx.Open("pgx", config.PostgresDSN)
 	if err != nil {
 		return nil, err
@@ -98,7 +92,7 @@ func setupDatabaseConnection(config conf2.DB) (*sqlx.DB, error) {
 	return db, nil
 }
 
-func applyMigrations(db *sqlx.DB, config conf2.DB) error {
+func applyMigrations(db *sqlx.DB, config conf.DB) error {
 	migrationDriver, err := postgres.WithInstance(db.DB, &postgres.Config{})
 	if err != nil {
 		return errors.Wrap(err, "failed to create postgres instance")
@@ -117,7 +111,7 @@ func applyMigrations(db *sqlx.DB, config conf2.DB) error {
 	return nil
 }
 
-func setupBot(config conf2.Telegram) *telegram.Bot {
+func setupBot(config conf.Telegram) *telegram.Bot {
 	opts := &telegram.Opts{}
 	opts.Middleware = func(handler telegram.RequestHandler) telegram.RequestHandler {
 		return func(methodName string, request interface{}) (json.RawMessage, error) {

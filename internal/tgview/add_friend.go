@@ -1,7 +1,7 @@
 package tgview
 
 import (
-	friendship2 "github.com/lodthe/bdaytracker-go/internal/friendship"
+	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/lodthe/bdaytracker-go/internal/usersession"
 	"github.com/petuhovskiy/telegram"
 
@@ -43,7 +43,7 @@ func (a AddFriend) Cancel(s *usersession.Session) {
 Может, как-нибудь в следующий раз.`, Menu{}.Keyboard())
 }
 
-func (a AddFriend) Success(s *usersession.Session, newFriend friendship2.Friend) {
+func (a AddFriend) Success(s *usersession.Session, newFriend friendship.Friend) {
 	keyboard := [][]telegram.InlineKeyboardButton{
 		{
 			tgcallback.Button(btn.AddFriend, tgcallback.AddFriend{}),

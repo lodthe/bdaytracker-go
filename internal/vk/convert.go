@@ -5,12 +5,12 @@ import (
 
 	"github.com/SevereCloud/vksdk/object"
 	"github.com/google/uuid"
-	friendship2 "github.com/lodthe/bdaytracker-go/internal/friendship"
+	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/sirupsen/logrus"
 )
 
-func friendObjectToFriend(obj *object.FriendsUserXtrLists) friendship2.Friend {
-	result := friendship2.Friend{
+func friendObjectToFriend(obj *object.FriendsUserXtrLists) friendship.Friend {
+	result := friendship.Friend{
 		UUID: uuid.New().String(),
 		Name: fmt.Sprintf("%s %s", obj.FirstName, obj.LastName),
 		VKID: &obj.ID,

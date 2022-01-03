@@ -1,7 +1,7 @@
 package tgview
 
 import (
-	friendship2 "github.com/lodthe/bdaytracker-go/internal/friendship"
+	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/lodthe/bdaytracker-go/internal/usersession"
 	"github.com/petuhovskiy/telegram"
 
@@ -18,9 +18,9 @@ func (f FriendList) Send(s *usersession.Session, clb tgcallback.FriendList) {
 	clb.Offset = minInt(clb.Offset, len(s.State.Friends)-1)
 	clb.Offset = maxInt(clb.Offset, 0)
 
-	sorted := friendship2.SortFriends(s.State.Friends)
+	sorted := friendship.SortFriends(s.State.Friends)
 
-	var friends []friendship2.Friend
+	var friends []friendship.Friend
 	if len(sorted) != 0 {
 		friends = sorted[clb.Offset:minInt(clb.Offset+pageSize, len(sorted))]
 	}

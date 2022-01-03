@@ -19,8 +19,9 @@ func (s *Session) AnswerOnLastCallback() {
 	if s.LastUpdate == nil || s.LastUpdate.CallbackQuery == nil {
 		return
 	}
-	_, _ = s.Executor.Execute(func() (interface{}, error) {
-		return s.Bot.AnswerCallbackQuery(&telegram.AnswerCallbackQueryRequest{
+
+	_, _ = s.ctrl.tgExecutor.Execute(func() (interface{}, error) {
+		return s.ctrl.tgBot.AnswerCallbackQuery(&telegram.AnswerCallbackQueryRequest{
 			CallbackQueryID: s.LastUpdate.CallbackQuery.ID,
 		})
 	})
@@ -30,8 +31,8 @@ func (s *Session) sendMessage(text string, keyboard telegram.AnyKeyboard) error 
 	if s.State.CannotReceiveMessages {
 		return nil
 	}
-	_, err := s.Executor.Execute(func() (interface{}, error) {
-		return s.Bot.SendMessage(&telegram.SendMessageRequest{
+	_, err := s.ctrl.tgExecutor.Execute(func() (interface{}, error) {
+		return s.ctrl.tgBot.SendMessage(&telegram.SendMessageRequest{
 			ChatID:                strconv.Itoa(s.TelegramID),
 			Text:                  text,
 			ParseMode:             parseMode,
@@ -53,8 +54,8 @@ func (s *Session) editInlineMessage(text string, keyboard *telegram.InlineKeyboa
 	if s.State.CannotReceiveMessages {
 		return nil
 	}
-	_, err := s.Executor.Execute(func() (interface{}, error) {
-		return s.Bot.EditMessageText(&telegram.EditMessageTextRequest{
+	_, err := s.ctrl.tgExecutor.Execute(func() (interface{}, error) {
+		return s.ctrl.tgBot.EditMessageText(&telegram.EditMessageTextRequest{
 			ChatID:                strconv.Itoa(s.TelegramID),
 			MessageID:             s.LastUpdate.CallbackQuery.Message.MessageID,
 			InlineMessageID:       s.LastUpdate.CallbackQuery.InlineMessageID,
@@ -116,10 +117,10 @@ func (s *Session) SendInlinePhoto(text string, file string, keyboard telegram.An
 	if s.State.CannotReceiveMessages {
 		return nil
 	}
-	_, err := s.Executor.Execute(func() (interface{}, error) {
-		return s.Bot.SendPhoto(&telegram.SendPhotoRequest{
+	_, err := s.ctrl.tgExecutor.Execute(func() (interface{}, error) {
+		return s.ctrl.tgBot.SendPhoto(&telegram.SendPhotoRequest{
 			ChatID:      strconv.Itoa(s.TelegramID),
-			Photo:       filereader.NewFileReader(file),
+			Photo:       filereader.NewFileReader(s.ctrl.cfg.AssetsPath, file),
 			Caption:     text,
 			ParseMode:   parseMode,
 			ReplyMarkup: keyboard,
@@ -159,8 +160,8 @@ func (s *Session) DeleteLastMessage() error {
 	}
 
 	msg := s.LastUpdate.CallbackQuery.Message
-	_, err := s.Executor.Execute(func() (interface{}, error) {
-		return s.Bot.DeleteMessage(&telegram.DeleteMessageRequest{
+	_, err := s.ctrl.tgExecutor.Execute(func() (interface{}, error) {
+		return s.ctrl.tgBot.DeleteMessage(&telegram.DeleteMessageRequest{
 			ChatID:    strconv.Itoa(msg.Chat.ID),
 			MessageID: msg.MessageID,
 		})

@@ -1,7 +1,8 @@
 package usersession
 
 import (
-	vk2 "github.com/lodthe/bdaytracker-go/internal/vk"
+	"github.com/lodthe/bdaytracker-go/internal/conf"
+	"github.com/lodthe/bdaytracker-go/internal/vk"
 	"github.com/petuhovskiy/telegram"
 	"github.com/pkg/errors"
 
@@ -9,10 +10,17 @@ import (
 	"github.com/lodthe/bdaytracker-go/internal/tgstate"
 )
 
+type controllers struct {
+	cfg        *conf.Config
+	tgBot      *telegram.Bot
+	tgExecutor *tglimiter.Executor
+	vkCli      *vk.Client
+
+	repo tgstate.Repository
+}
+
 type Session struct {
-	VKCli    *vk2.Client
-	Bot      *telegram.Bot
-	Executor *tglimiter.Executor
+	ctrl controllers
 
 	TelegramID int
 	LastUpdate *telegram.Update
@@ -20,16 +28,34 @@ type Session struct {
 	State *tgstate.State
 }
 
-func NewSession(vkCli *vk2.Client, bot *telegram.Bot, executor *tglimiter.Executor, repo tgstate.Repository, telegramID int, update *telegram.Update) (*Session, error) {
-	st, err := repo.Get(telegramID)
+func (s *Session) SaveState() error {
+	return s.ctrl.repo.Save(s.State)
+}
+
+type Issuer struct {
+	ctrl controllers
+}
+
+func NewIssuer(cfg *conf.Config, tgBot *telegram.Bot, tgExecutor *tglimiter.Executor, vkCli *vk.Client, repo tgstate.Repository) *Issuer {
+	return &Issuer{
+		ctrl: controllers{
+			cfg:        cfg,
+			tgBot:      tgBot,
+			tgExecutor: tgExecutor,
+			vkCli:      vkCli,
+			repo:       repo,
+		},
+	}
+}
+
+func (s *Issuer) Issue(telegramID int, update *telegram.Update) (*Session, error) {
+	st, err := s.ctrl.repo.Get(telegramID)
 	if err != nil {
 		return nil, errors.Wrap(err, "state loading failed")
 	}
 
 	return &Session{
-		VKCli:      vkCli,
-		Bot:        bot,
-		Executor:   executor,
+		ctrl:       s.ctrl,
 		TelegramID: telegramID,
 		LastUpdate: update,
 		State:      st,

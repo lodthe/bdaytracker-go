@@ -3,7 +3,7 @@ package tgview
 import (
 	"fmt"
 
-	friendship2 "github.com/lodthe/bdaytracker-go/internal/friendship"
+	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/lodthe/bdaytracker-go/internal/usersession"
 	"github.com/petuhovskiy/telegram"
 
@@ -26,7 +26,7 @@ func (f RemoveFriend) WrongName(s *usersession.Session) {
 	s.SendText("Не могу найти друга с таким именем. Имя должно быть таким же, как и в списке друзей.\n\nПопробуй еще раз!", cancelKeyboard())
 }
 
-func (f RemoveFriend) AskForApprove(s *usersession.Session, friend friendship2.Friend) {
+func (f RemoveFriend) AskForApprove(s *usersession.Session, friend friendship.Friend) {
 	text := fmt.Sprintf("Из списка друзей будет удалена запись\n%s", formatFriend(friend))
 	s.SendText(text, [][]telegram.InlineKeyboardButton{
 		{

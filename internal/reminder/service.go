@@ -21,7 +21,7 @@ const maxNotificationsInSecond = 15
 
 type Service struct {
 	stateRepo tgstate.Repository
-	general   *usersession.General
+	issuer    *usersession.Issuer
 	storage   *usersession.Storage
 
 	rateLimiter *limiter.RateLimiter
@@ -39,10 +39,10 @@ func newRateLimiter() *limiter.RateLimiter {
 	return rateLimiter
 }
 
-func NewService(repo tgstate.Repository, general *usersession.General, storage *usersession.Storage) *Service {
+func NewService(repo tgstate.Repository, issuer *usersession.Issuer, storage *usersession.Storage) *Service {
 	return &Service{
 		stateRepo:   repo,
-		general:     general,
+		issuer:      issuer,
 		storage:     storage,
 		rateLimiter: newRateLimiter(),
 	}
@@ -110,13 +110,15 @@ func (s *Service) sendNotifications() {
 		wg.Add(1)
 
 		go func(userTelegramID int) {
+			defer wg.Done()
+
 			lock := s.storage.AcquireLock(userTelegramID)
 			lock.Lock()
 			defer lock.Unlock()
 
 			logger := logrus.WithField("telegram_id", userTelegramID)
 
-			session, err := usersession.NewSession(s.general.VKCli, s.general.Bot, s.general.Executor, s.stateRepo, userTelegramID, nil)
+			session, err := s.issuer.Issue(userTelegramID, nil)
 			if err != nil {
 				logger.WithError(err).Error("failed to create a new session")
 				wg.Done()
@@ -140,7 +142,6 @@ func (s *Service) sendNotifications() {
 			}
 
 			s.stateRepo.Save(session.State)
-			wg.Done()
 		}(states[i].TelegramID)
 	}
 

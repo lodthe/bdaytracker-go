@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	apiErrors "github.com/SevereCloud/vksdk/api/errors"
-	friendship2 "github.com/lodthe/bdaytracker-go/internal/friendship"
+	"github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/lodthe/bdaytracker-go/internal/usersession"
 
 	"github.com/lodthe/bdaytracker-go/internal/tgcallback"
@@ -48,7 +48,7 @@ func (h *AddFromVKHandler) handleVKID(s *usersession.Session, vkID string) {
 	}
 
 	s.State.VKID = id
-	friendsToAdd, err := s.VKCli.GetFriends(id)
+	friendsToAdd, err := s.GetVKFriends(id)
 	if apiErrors.GetType(err) == apiErrors.PrivateProfile {
 		tgview.AddFromVK{}.ProfileIsHidden(s)
 		return
@@ -58,7 +58,7 @@ func (h *AddFromVKHandler) handleVKID(s *usersession.Session, vkID string) {
 		return
 	}
 
-	s.State.Friends = friendship2.RemoveVKFriends(s.State.Friends)
+	s.State.Friends = friendship.RemoveVKFriends(s.State.Friends)
 	s.State.Friends = append(s.State.Friends, friendsToAdd...)
 	s.State.State = tgstate.None
 	tgview.AddFromVK{}.Success(s)

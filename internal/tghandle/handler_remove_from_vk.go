@@ -1,7 +1,7 @@
 package tghandle
 
 import (
-	friendship2 "github.com/lodthe/bdaytracker-go/internal/friendship"
+	friendship "github.com/lodthe/bdaytracker-go/internal/friendship"
 	"github.com/lodthe/bdaytracker-go/internal/tgcallback"
 	"github.com/lodthe/bdaytracker-go/internal/tgview"
 	"github.com/lodthe/bdaytracker-go/internal/usersession"
@@ -15,6 +15,6 @@ func (h *RemoveFromVKHandler) Callback() interface{} {
 }
 
 func (h *RemoveFromVKHandler) HandleCallback(s *usersession.Session, clb interface{}) {
-	s.State.Friends = friendship2.RemoveVKFriends(s.State.Friends)
+	s.State.Friends = friendship.RemoveVKFriends(s.State.Friends)
 	tgview.RemoveFromVK{}.Success(s)
 }
