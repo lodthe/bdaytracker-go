@@ -1,38 +1,38 @@
-FROM golang:1.16.12-alpine3.15 AS go-builder
+# Dockerfile was generated from
+# https://github.com/lodthe/dockerfiles/blob/main/go/Dockerfile
 
-WORKDIR /usr/src/app
+FROM golang:1.17.3-alpine3.14 AS builder
 
-RUN apk add --update \
-        curl \
-        gcc \
-        git \
-        make \
-        musl-dev \
-        tzdata
+# Setup base software for building an app.
+RUN apk update && \
+    apk add bash ca-certificates git gcc g++ libc-dev binutils file
 
-COPY go.mod .
-COPY go.sum .
-RUN go mod download
+WORKDIR /opt
 
-COPY . .
-RUN go build -o /app
+# Download dependencies.
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
 
-
-FROM alpine:3.15
-
-# Install packages required by the image
-RUN apk add --update \
-        bash \
-        ca-certificates \
-        coreutils \
-        curl \
-        jq \
-        tzdata \
-        openssl \
-    && rm /var/cache/apk/*
-
-COPY --from=go-builder /app ./
-
+# Copy application source.
 COPY . .
 
-CMD [ "./app" ]
+# Build the application.
+RUN go build -o bin/application .
+
+# Prepare executor image.
+FROM alpine:3.14 AS runner
+
+RUN apk update && \
+    apk add ca-certificates libc6-compat && \
+    rm -rf /var/cache/apk/*
+
+WORKDIR /opt
+
+COPY --from=builder /opt/bin/application ./
+
+# Add required static files.
+COPY assets assets
+COPY migrations migrations
+
+# Run the application.
+CMD ["./application"]
