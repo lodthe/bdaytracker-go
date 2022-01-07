@@ -45,6 +45,7 @@ func NewService(cfg *conf.Mailing, stateGetter StateGetter, issuer SessionIssuer
 	rateLimiter.Start()
 
 	return &Service{
+		cfg:         cfg,
 		stateGetter: stateGetter,
 		issuer:      issuer,
 		rateLimiter: rateLimiter,

@@ -72,7 +72,7 @@ func (r *Repo) GetAll() ([]*State, error) {
 		return nil, err
 	}
 
-	result := make([]*State, 0, len(records))
+	result := make([]*State, len(records))
 	for i := range records {
 		result[i] = &records[i].State
 	}
