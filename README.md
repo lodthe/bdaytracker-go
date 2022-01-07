@@ -5,22 +5,26 @@
 
 ## Description
 
-This is a Telegram bot that helps you to not forget about your friends' birthdays. 
+This is a Telegram bot that helps to not miss your friends' birthdays. 
 
-If someone from your added friend has the birthday today, the bot will reminder about that.
+Add a friend's date of birth, and the bot will remind you about the birthday on the right day.
 
 ## Features
 
-The main feature is the ability to import birthday dates from your VK (social network, popular in CIS) profile. 
+The main feature is the ability to import birthday dates from your VK profile. 
 
-Now you haven't to check VK to not to miss a friend's birthday. You can track this in Telegram!
+Now you haven't to check VK to not miss a friend's birthday. You can track this in Telegram!
 
-## Language
-
-As the main feature is strongly connected with VK, **only Russian is supported**.
-
-## Other
+## How to find the bot
 
 The bot is available by the following link: [@bdaytracker_bot](https://t.me/bdaytracker_bot)
 
-JFYI. At first, the bot [was written](https://github.com/LoDThe/BDayTracker_Kotlin) in Kotlin.
+The only provided localization is Russian.
+
+## Technicalities
+
+- CI consists of running tests and the linter.
+
+- PostgreSQL is used to store user states. [Migrations](./migrations) are applied automatically when the app starts, so the application can be started with an empty database. 
+
+- The application can be run with [docker-compose](./docker-compose.yml). Check [.env.dist](.env.dist) as an example for envs. 
