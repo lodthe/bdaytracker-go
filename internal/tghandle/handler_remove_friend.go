@@ -44,6 +44,7 @@ func (h *RemoveFriendHandler) findByIndex(s *usersession.Session, index int, fri
 		tgview.RemoveFriend{}.WrongIndex(s)
 		return friendship.Friend{}, false
 	}
+
 	return friends[index-1], true
 }
 
@@ -53,7 +54,17 @@ func (h *RemoveFriendHandler) findByName(s *usersession.Session, name string, fr
 			return friends[i], true
 		}
 	}
-	tgview.RemoveFriend{}.WrongName(s)
+
+	return friendship.Friend{}, false
+}
+
+func (h *RemoveFriendHandler) findByUUID(s *usersession.Session, uuid string, friends []friendship.Friend) (friend friendship.Friend, found bool) {
+	for i := range friends {
+		if uuid == friends[i].UUID {
+			return friends[i], true
+		}
+	}
+
 	return friendship.Friend{}, false
 }
 
@@ -66,6 +77,9 @@ func (h *RemoveFriendHandler) handleIndexOrName(s *usersession.Session, msgText 
 	index, err := strconv.Atoi(msgText)
 	if err != nil {
 		friend, found = h.findByName(s, msgText, sorted)
+		if !found {
+			tgview.RemoveFriend{}.WrongName(s)
+		}
 	} else {
 		friend, found = h.findByIndex(s, index, sorted)
 	}

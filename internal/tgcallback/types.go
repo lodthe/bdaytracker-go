@@ -38,11 +38,10 @@ type RemoveFriend struct {
 
 type RemoveFriendApprove struct {
 	UUID string
-	Name string
 }
 
 type RemoveFriendCancel struct {
-	Name string
+	UUID string
 }
 
 type RemoveFromVK struct {
