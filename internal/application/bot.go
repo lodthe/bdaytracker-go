@@ -13,11 +13,6 @@ func setupBot(config conf.Telegram) *telegram.Bot {
 	opts := &telegram.Opts{}
 	opts.Middleware = func(handler telegram.RequestHandler) telegram.RequestHandler {
 		return func(methodName string, request interface{}) (json.RawMessage, error) {
-			logrus.WithFields(logrus.Fields{
-				"request": request,
-				"method":  methodName,
-			}).Debug("a telegram bot request")
-
 			j, err := handler(methodName, request)
 
 			if err != nil {
