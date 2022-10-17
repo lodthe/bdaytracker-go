@@ -48,19 +48,9 @@ func (h *RemoveFriendHandler) findByIndex(s *usersession.Session, index int, fri
 	return friends[index-1], true
 }
 
-func (h *RemoveFriendHandler) findByName(s *usersession.Session, name string, friends []friendship.Friend) (friend friendship.Friend, found bool) {
+func (h *RemoveFriendHandler) findByName(_ *usersession.Session, name string, friends []friendship.Friend) (friend friendship.Friend, found bool) {
 	for i := range friends {
 		if strings.EqualFold(friends[i].Name, name) {
-			return friends[i], true
-		}
-	}
-
-	return friendship.Friend{}, false
-}
-
-func (h *RemoveFriendHandler) findByUUID(s *usersession.Session, uuid string, friends []friendship.Friend) (friend friendship.Friend, found bool) {
-	for i := range friends {
-		if uuid == friends[i].UUID {
 			return friends[i], true
 		}
 	}
