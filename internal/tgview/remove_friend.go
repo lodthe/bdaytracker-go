@@ -33,25 +33,22 @@ func (f RemoveFriend) AskForApprove(s *usersession.Session, friend friendship.Fr
 		{
 			tgcallback.Button(btn.Approve, tgcallback.RemoveFriendApprove{
 				UUID: friend.UUID,
-				Name: friend.Name,
 			}),
 			tgcallback.Button(btn.Cancel, tgcallback.RemoveFriendCancel{
-				Name: friend.Name,
+				UUID: friend.UUID,
 			}),
 		},
 	})
 }
 
-func (f RemoveFriend) Approved(s *usersession.Session, clb tgcallback.RemoveFriendApprove) {
-	text := fmt.Sprintf("<b>%s</b> удален(а) из списка друзей.", clb.Name)
+func (f RemoveFriend) Approved(s *usersession.Session, _ tgcallback.RemoveFriendApprove) {
 	_ = s.DeleteLastMessage()
-	_ = s.SendText(text, menuKeyboard())
+	_ = s.SendText("Список друзей обновлен.", menuKeyboard())
 }
 
-func (f RemoveFriend) Canceled(s *usersession.Session, clb tgcallback.RemoveFriendCancel) {
-	text := fmt.Sprintf("<b>%s</b> остается в списке друзей!", clb.Name)
+func (f RemoveFriend) Canceled(s *usersession.Session, _ tgcallback.RemoveFriendCancel) {
 	_ = s.DeleteLastMessage()
-	_ = s.SendText(text, menuKeyboard())
+	_ = s.SendText("Хорошо, никого не удаляем!", menuKeyboard())
 }
 
 func (f RemoveFriend) Cancel(s *usersession.Session) {

@@ -72,7 +72,7 @@ linters:
     - godox
     - gofmt
     - goimports
-    - golint
+    - revive
     - gosec
     - nakedret
     - exportloopref
@@ -85,6 +85,7 @@ linters:
 run:
   skip-dirs:
     - .infra
+  go: "1.17"
 issues:
   exclude-rules:
     - linters:
@@ -94,13 +95,10 @@ issues:
       linters:
         - gomnd
         - gocritic
-        - golint
         - gosec
         - unparam
 
-# golangci.com configuration
-# https://github.com/golangci/golangci/wiki/Configuration
 service:
-  golangci-lint-version: 1.37.x # use the fixed version to not introduce new linters unexpectedly
+  golangci-lint-version: 1.48.0 # use the fixed version to not introduce new linters unexpectedly
   prepare:
     - echo "here I can run custom commands, but no preparation needed for this repo"
